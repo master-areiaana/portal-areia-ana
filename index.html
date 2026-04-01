@@ -17,7 +17,7 @@
 }
 
 body {
-  font-family: system-ui, sans-serif;
+  font-family: system-ui;
   background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
   color: var(--text);
   margin: 0;
@@ -28,123 +28,84 @@ body {
 .login-overlay{
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .login-box{
-  width: min(720px, 92vw);
-  padding: 56px 64px;
-  border-radius: 18px;
-  background: rgba(11, 16, 32, 0.75);
-  border: 1px solid rgba(255, 154, 74, 0.22);
+  width: 500px;
+  padding: 50px;
+  border-radius: 16px;
+  background: rgba(11,16,32,.8);
   text-align: center;
 }
 
 .login-logo{
-  width: 200px;
-  margin-bottom: 20px;
-  opacity: 0.95;
-}
-
-.login-title{
-  font-size: 22px;
-  margin-bottom: 6px;
-}
-
-.login-subtitle{
-  font-size: 14px;
-  color: var(--text-soft);
+  width: 220px;
   margin-bottom: 20px;
 }
 
 .login-input{
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 10px;
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
 }
 
 .login-btn{
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:8px;
   background: var(--accent);
-  color: #000;
-  font-weight: bold;
-  cursor: pointer;
+  cursor:pointer;
+  font-weight:bold;
 }
 
 /* PORTAL */
-.container {
-  max-width: 1150px;
-  margin: auto;
-  display: none;
-}
+.container{display:none;max-width:1150px;margin:auto}
 
-.logo {
-  width: 200px;
-}
-
-.subtitle{
-  color: var(--text-soft);
-}
+.logo{width:200px}
 
 /* MENU */
-.main-menu {
-  margin: 24px 0;
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
+.main-menu{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin:20px 0;
 }
 
-.menu-btn {
-  padding: 12px 14px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 154, 74, 0.3);
-  background: linear-gradient(135deg, rgba(255,122,26,0.12), rgba(5,8,20,0.95));
-  color: var(--text);
-  font-weight: 600;
-  cursor: pointer;
+.menu-btn{
+  padding:10px;
+  border-radius:999px;
+  border:1px solid #ff7a1a;
+  background:#0b1020;
+  color:white;
+  cursor:pointer;
 }
 
-.menu-btn.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-  color: #050814;
+.menu-btn.active{
+  background:var(--accent);
+  color:black;
 }
 
-.section {margin-bottom: 28px;}
-.hidden {display:none;}
+.section{display:none}
+.section.active{display:block}
 
-.section-title {
-  font-size: 18px;
-  margin-bottom: 14px;
-  color: var(--accent-soft);
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:12px;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 12px;
-}
-
-.link-card {
-  padding: 14px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 154, 74, 0.25);
-  color: var(--text);
-  text-decoration: none;
-}
-
-.link-card:hover {
-  transform: translateY(-2px);
-  background: var(--bg-card-soft);
-  border-color: var(--accent-soft);
+.link-card{
+  padding:14px;
+  background:#0b1020;
+  border-radius:10px;
+  text-decoration:none;
+  color:white;
 }
 </style>
 </head>
@@ -154,14 +115,11 @@ body {
 <!-- LOGIN -->
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
-
     <img src="logo-areia-ana.png" class="login-logo">
+    <h2>Portal Areia Ana</h2>
 
-    <div class="login-title">Portal Areia Ana</div>
-    <div class="login-subtitle">Acesso restrito</div>
-
-    <input type="password" id="senha" class="login-input" placeholder="Digite a senha">
-    <button class="login-btn" onclick="validarSenha()">Entrar</button>
+    <input type="password" id="senha" class="login-input">
+    <button class="login-btn" onclick="login()">Entrar</button>
   </div>
 </div>
 
@@ -171,51 +129,79 @@ body {
 <header>
   <img src="logo-areia-ana.png" class="logo">
   <h1>Portal de Acessos – Grupo Areia Ana</h1>
-  <p class="subtitle">Escolha uma área e clique para abrir o painel ou sistema.</p>
 </header>
 
-<!-- MENU -->
 <div class="main-menu">
-  <button class="menu-btn active" onclick="showSection('indicadores', this)">Indicadores</button>
-  <button class="menu-btn" onclick="showSection('comercial', this)">Comercial</button>
-  <button class="menu-btn" onclick="showSection('rh', this)">RH</button>
-  <button class="menu-btn" onclick="showSection('sistemas', this)">Sistemas</button>
-  <button class="menu-btn" onclick="showSection('planejamento', this)">Planejamento</button>
-  <button class="menu-btn" onclick="showSection('calendario', this)">Calendário</button>
+  <button class="menu-btn active" onclick="openTab('indicadores',this)">Indicadores</button>
+  <button class="menu-btn" onclick="openTab('comercial',this)">Comercial</button>
+  <button class="menu-btn" onclick="openTab('rh',this)">RH</button>
+  <button class="menu-btn" onclick="openTab('sistemas',this)">Sistemas</button>
+  <button class="menu-btn" onclick="openTab('planejamento',this)">Planejamento</button>
+  <button class="menu-btn" onclick="openTab('calendario',this)">Calendário</button>
 </div>
 
-<!-- PLANEJAMENTO -->
-<section id="planejamento" class="section hidden">
-  <div class="section-title">Planejamento e Controle</div>
+<!-- INDICADORES -->
+<section id="indicadores" class="section active">
   <div class="grid">
+    <a class="link-card" href="#">Remessas Usina</a>
+  </div>
+</section>
 
-    <a class="link-card" target="_blank" href="https://app.clickup.com/9007105436/v/l/8cdv1cw-423">
-      <div>Planejamento e Controle</div>
-      <div style="font-size:12px; opacity:0.6;">ClickUp</div>
+<!-- COMERCIAL -->
+<section id="comercial" class="section">
+  <div class="grid">
+    <a class="link-card" href="#">Carteira</a>
+  </div>
+</section>
+
+<!-- RH -->
+<section id="rh" class="section">
+  <div class="grid">
+    <a class="link-card" href="#">Ponto Mais</a>
+  </div>
+</section>
+
+<!-- SISTEMAS -->
+<section id="sistemas" class="section">
+  <div class="grid">
+    <a class="link-card" href="#">Topcon</a>
+  </div>
+</section>
+
+<!-- PLANEJAMENTO -->
+<section id="planejamento" class="section">
+  <div class="grid">
+    <a class="link-card" target="_blank"
+       href="https://app.clickup.com/9007105436/v/l/8cdv1cw-423">
+       Planejamento e Controle
     </a>
+  </div>
+</section>
 
+<!-- CALENDÁRIO -->
+<section id="calendario" class="section">
+  <div class="grid">
+    <a class="link-card">Calendário</a>
   </div>
 </section>
 
 </div>
 
 <script>
-const SENHA_CORRETA = "areiaadmin";
-
-function validarSenha(){
-  if(document.getElementById("senha").value === SENHA_CORRETA){
-    document.getElementById("loginOverlay").style.display = "none";
-    document.getElementById("portal").style.display = "block";
-  } else {
+function login(){
+  if(document.getElementById("senha").value==="areiaadmin"){
+    document.getElementById("loginOverlay").style.display="none";
+    document.getElementById("portal").style.display="block";
+  }else{
     alert("Senha incorreta");
   }
 }
 
-function showSection(id, btn){
-  document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
+function openTab(id,btn){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 
-  document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
 }
 </script>
