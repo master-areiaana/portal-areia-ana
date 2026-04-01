@@ -1,18 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<title>Portal de Acessos - Grupo Areia Ana</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<title>Portal Atualizado - Areia Ana</title>
-
-<!-- REDIRECIONAMENTO AUTOMÁTICO -->
-<meta http-equiv="refresh" content="3; url=https://master-areiaana.github.io/portal-areia-ana/">
 
 <style>
 :root {
   --bg: #050814;
   --bg-card: #0b1020;
+  --bg-card-soft: #101629;
   --accent: #ff7a1a;
   --accent-soft: #ff9b4a;
   --text: #f5f7ff;
@@ -20,81 +17,97 @@
 }
 
 body {
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
+  color: var(--text);
   margin: 0;
-  height: 100vh;
+  padding: 24px;
+}
+
+/* ===================== REDIRECIONAMENTO ===================== */
+.redirect-overlay{
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
-  font-family: system-ui, sans-serif;
-  color: var(--text);
+  z-index: 99999;
 }
 
-.box {
-  width: min(500px, 90%);
-  padding: 40px;
+.redirect-box{
+  width: min(600px, 90vw);
+  padding: 50px;
   border-radius: 18px;
-  background: rgba(11, 16, 32, 0.85);
-  border: 1px solid rgba(255, 154, 74, 0.25);
+  background: rgba(11,16,32,0.85);
+  border: 1px solid rgba(255,154,74,.25);
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 
-/* LOGO */
-.logo {
-  width: 140px;
+.redirect-logo{
+  width: 160px;
   margin-bottom: 20px;
-  opacity: 0.95;
 }
 
-/* TITULO */
-h1 {
-  margin: 10px 0;
+.redirect-title{
   font-size: 22px;
-}
-
-/* TEXTO */
-p {
-  color: var(--text-soft);
-  font-size: 14px;
-}
-
-/* BOTÃO */
-.btn {
-  display: inline-block;
-  margin-top: 20px;
-  padding: 12px 22px;
-  border-radius: 999px;
-  text-decoration: none;
   font-weight: 700;
-  color: #050814;
-  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-  transition: .2s;
+  margin-bottom: 10px;
 }
 
-.btn:hover {
-  transform: translateY(-2px);
+.redirect-sub{
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 25px;
 }
+
+.redirect-btn{
+  padding: 12px 24px;
+  border-radius: 999px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+  color: #050814;
+}
+
+/* ===================== PORTAL (mantido igual) ===================== */
+.container { display:none; }
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<!-- ===================== TELA DE REDIRECIONAMENTO ===================== -->
+<div class="redirect-overlay" id="redirect">
+  <div class="redirect-box">
+    <img src="./logo-areia-ana.png" class="redirect-logo">
 
-  <!-- SUA LOGO -->
-  <img src="logo-areia-ana.png" class="logo">
+    <div class="redirect-title">Novo Portal Disponível</div>
+    <div class="redirect-sub">
+      Você será redirecionado automaticamente para o novo sistema.<br>
+      Caso não seja redirecionado, clique abaixo.
+    </div>
 
-  <h1>Portal Atualizado</h1>
-
-  <p>Estamos direcionando você para o novo portal.</p>
-  <p>Caso não redirecione automaticamente:</p>
-
-  <a class="btn" href="https://master-areiaana.github.io/portal-areia-ana/">
-    Acessar Novo Portal
-  </a>
-
+    <button class="redirect-btn" onclick="irParaNovo()">
+      Acessar Novo Portal
+    </button>
+  </div>
 </div>
+
+<script>
+const NOVO_LINK = "https://SEU-NOVO-LINK-AQUI";
+
+// redirecionamento automático
+setTimeout(() => {
+  window.location.href = NOVO_LINK;
+}, 2500);
+
+// botão manual
+function irParaNovo(){
+  window.location.href = NOVO_LINK;
+}
+</script>
 
 </body>
 </html>
