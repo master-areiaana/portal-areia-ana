@@ -24,222 +24,88 @@ body {
   padding: 24px;
 }
 
-/* LOGIN */
-.login-overlay{
+/* ===================== REDIRECIONAMENTO ===================== */
+.redirect-overlay{
   position: fixed;
   inset: 0;
+  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
+  z-index: 99999;
 }
 
-.login-box{
-  width: min(720px, 92vw);
-  padding: 56px;
+.redirect-box{
+  width: min(600px, 90vw);
+  padding: 50px;
   border-radius: 18px;
-  background: rgba(11,16,32,.75);
-  border: 1px solid rgba(255,154,74,.22);
+  background: rgba(11,16,32,0.85);
+  border: 1px solid rgba(255,154,74,.25);
   text-align: center;
 }
 
-.login-logo{
-  width: 180px;
+.redirect-logo{
+  width: 160px;
   margin-bottom: 20px;
 }
 
-.login-input{
-  width: 100%;
-  height: 50px;
-  border-radius: 12px;
-  border: none;
-  padding: 10px;
-  margin-top: 10px;
+.redirect-title{
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
-.login-btn{
-  margin-top: 12px;
-  width: 100%;
-  height: 50px;
+.redirect-sub{
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-bottom: 25px;
+}
+
+.redirect-btn{
+  padding: 12px 24px;
   border-radius: 999px;
   border: none;
-  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-}
-
-/* PORTAL */
-.container {display:none; max-width:1150px; margin:auto;}
-
-.logo {width:180px;}
-
-.main-menu{
-  margin:24px 0;
-  display:grid;
-  grid-template-columns:repeat(5,1fr);
-  gap:10px;
-}
-
-.menu-btn{
-  padding:12px;
-  border-radius:999px;
-  border:1px solid rgba(255,154,74,.3);
-  background: rgba(255,122,26,0.1);
-  color:var(--text);
-  cursor:pointer;
-}
-
-.menu-btn.active{
   background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-  color:#050814;
+  color: #050814;
 }
 
-.section{margin-bottom:28px;}
-.hidden{display:none;}
-
-.section-title{
-  color:var(--accent-soft);
-  margin-bottom:12px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:12px;
-}
-
-.grid-calendario{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-
-.link-card{
-  padding:14px;
-  background:var(--bg-card);
-  border-radius:12px;
-  border:1px solid rgba(255,154,74,.25);
-  text-decoration:none;
-  color:var(--text);
-}
-
-.link-card:hover{
-  background:var(--bg-card-soft);
-}
+/* ===================== PORTAL (mantido igual) ===================== */
+.container { display:none; }
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div class="login-overlay" id="loginOverlay">
-  <div class="login-box">
+<!-- ===================== TELA DE REDIRECIONAMENTO ===================== -->
+<div class="redirect-overlay" id="redirect">
+  <div class="redirect-box">
+    <img src="./logo-areia-ana.png" class="redirect-logo">
 
-    <img src="logo-areia-ana.png" class="login-logo">
+    <div class="redirect-title">Novo Portal Disponível</div>
+    <div class="redirect-sub">
+      Você será redirecionado automaticamente para o novo sistema.<br>
+      Caso não seja redirecionado, clique abaixo.
+    </div>
 
-    <h2>Portal Areia Ana</h2>
-    <p>Acesso restrito</p>
-
-    <input type="password" id="senha" class="login-input" placeholder="Digite a senha">
-    <button class="login-btn" onclick="validarSenha()">Entrar</button>
-
+    <button class="redirect-btn" onclick="irParaNovo()">
+      Acessar Novo Portal
+    </button>
   </div>
-</div>
-
-<!-- PORTAL -->
-<div class="container" id="portal">
-
-<header style="text-align:center;">
-  <img src="logo-areia-ana.png" class="logo">
-  <h1>Portal de Acessos – Grupo Areia Ana</h1>
-</header>
-
-<!-- MENU -->
-<div class="main-menu">
-  <button class="menu-btn active" onclick="showSection('indicadores', this)">Indicadores</button>
-  <button class="menu-btn" onclick="showSection('comercial', this)">Comercial</button>
-  <button class="menu-btn" onclick="showSection('rh', this)">RH</button>
-  <button class="menu-btn" onclick="showSection('sistemas', this)">Sistemas</button>
-  <button class="menu-btn" onclick="showSection('calendario', this)">Calendário</button>
-</div>
-
-<!-- INDICADORES -->
-<section id="indicadores" class="section">
-  <div class="section-title">Indicadores</div>
-  <div class="grid">
-    <a class="link-card" target="_blank" href="https://app.powerbi.com">
-      <div>Power BI</div>
-    </a>
-  </div>
-</section>
-
-<!-- COMERCIAL -->
-<section id="comercial" class="section hidden">
-  <div class="section-title">Comercial</div>
-  <div class="grid">
-    <a class="link-card" target="_blank" href="https://clickup.com">
-      <div>ClickUp</div>
-    </a>
-  </div>
-</section>
-
-<!-- RH -->
-<section id="rh" class="section hidden">
-  <div class="section-title">RH</div>
-  <div class="grid">
-    <a class="link-card" target="_blank" href="#">
-      <div>RH Sistema</div>
-    </a>
-  </div>
-</section>
-
-<!-- SISTEMAS -->
-<section id="sistemas" class="section hidden">
-  <div class="section-title">Sistemas</div>
-  <div class="grid">
-    <a class="link-card" target="_blank" href="#">
-      <div>Sistema Interno</div>
-    </a>
-  </div>
-</section>
-
-<!-- CALENDÁRIO -->
-<section id="calendario" class="section hidden">
-  <div class="section-title">Calendário Corporativo</div>
-
-  <div class="grid-calendario">
-
-    <a class="link-card" target="_blank"
-       href="https://master-areiaana.github.io/agenda-areia-ana">
-      <div>Calendário Corporativo – Areia Ana</div>
-    </a>
-
-    <a class="link-card" target="_blank"
-       href="https://app.clickup.com/9007105436/v/l/8cdv1cw-423">
-      <div>Planejamento e Controle</div>
-    </a>
-
-  </div>
-</section>
-
 </div>
 
 <script>
-const SENHA_CORRETA = "areiaadmin";
+const NOVO_LINK = "https://SEU-NOVO-LINK-AQUI";
 
-function validarSenha(){
-  if(document.getElementById("senha").value === SENHA_CORRETA){
-    document.getElementById("loginOverlay").style.display="none";
-    document.getElementById("portal").style.display="block";
-  }
-}
+// redirecionamento automático
+setTimeout(() => {
+  window.location.href = NOVO_LINK;
+}, 2500);
 
-function showSection(id, btn){
-  document.querySelectorAll(".section").forEach(sec => sec.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-
-  document.querySelectorAll(".menu-btn").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
+// botão manual
+function irParaNovo(){
+  window.location.href = NOVO_LINK;
 }
 </script>
 
