@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<title>Portal de Acessos - Grupo Areia Ana</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Portal Atualizado - Areia Ana</title>
+
+<!-- REDIRECIONAMENTO AUTOMÁTICO -->
+<meta http-equiv="refresh" content="3; url=https://master-areiaana.github.io/portal-areia-ana/">
 
 <style>
 :root {
   --bg: #050814;
   --bg-card: #0b1020;
-  --bg-card-soft: #101629;
   --accent: #ff7a1a;
   --accent-soft: #ff9b4a;
   --text: #f5f7ff;
@@ -17,216 +20,81 @@
 }
 
 body {
-  font-family: system-ui, sans-serif;
-  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
-  color: var(--text);
   margin: 0;
-  padding: 24px;
-}
-
-/* ================= REDIRECIONAMENTO ================= */
-.redirect-overlay{
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 99999;
+  background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
+  font-family: system-ui, sans-serif;
+  color: var(--text);
 }
 
-.redirect-box{
-  width: min(600px, 90vw);
-  padding: 50px;
+.box {
+  width: min(500px, 90%);
+  padding: 40px;
   border-radius: 18px;
-  background: rgba(11,16,32,0.85);
-  border: 1px solid rgba(255,154,74,.25);
+  background: rgba(11, 16, 32, 0.85);
+  border: 1px solid rgba(255, 154, 74, 0.25);
   text-align: center;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
 
-.redirect-logo{
-  width: 160px;
-  margin-bottom: 20px;
-}
-
-.redirect-title{
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.redirect-sub{
-  font-size: 13px;
-  color: var(--text-soft);
-  margin-bottom: 25px;
-}
-
-.redirect-btn{
-  padding: 12px 24px;
-  border-radius: 999px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
-  color: #050814;
-}
-
-/* ================= PORTAL ================= */
-.container {
-  max-width: 1150px;
-  margin:auto;
-  display:none;
-}
-
-header {
-  text-align:center;
-  margin-bottom:30px;
-}
-
+/* LOGO */
 .logo {
-  width:180px;
+  width: 140px;
+  margin-bottom: 20px;
+  opacity: 0.95;
 }
 
-.main-menu {
-  margin:24px 0;
-  display:grid;
-  grid-template-columns: repeat(5,1fr);
-  gap:10px;
+/* TITULO */
+h1 {
+  margin: 10px 0;
+  font-size: 22px;
 }
 
-.menu-btn {
-  padding:12px;
-  border-radius:999px;
-  border:1px solid rgba(255,154,74,0.3);
-  background:linear-gradient(135deg, rgba(255,122,26,0.12), rgba(5,8,20,0.95));
-  color:var(--text);
-  cursor:pointer;
+/* TEXTO */
+p {
+  color: var(--text-soft);
+  font-size: 14px;
 }
 
-.menu-btn.active {
-  background:linear-gradient(135deg,var(--accent),var(--accent-soft));
-  color:#050814;
+/* BOTÃO */
+.btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  color: #050814;
+  background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+  transition: .2s;
 }
 
-.section { margin-bottom:28px; }
-.hidden { display:none; }
-
-.section-title {
-  font-size:18px;
-  margin-bottom:14px;
-  color:var(--accent-soft);
-}
-
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:12px;
-}
-
-.grid-calendario {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,420px));
-  gap:12px;
-}
-
-.link-card {
-  padding:14px;
-  background:var(--bg-card);
-  border-radius:12px;
-  border:1px solid rgba(255,154,74,0.25);
-  text-decoration:none;
-  color:var(--text);
-}
-
-.link-card:hover {
-  background:var(--bg-card-soft);
+.btn:hover {
+  transform: translateY(-2px);
 }
 </style>
 </head>
 
 <body>
 
-<!-- REDIRECIONAMENTO -->
-<div class="redirect-overlay">
-  <div class="redirect-box">
-    <img src="./logo-areia-ana.png" class="redirect-logo">
+<div class="box">
 
-    <div class="redirect-title">Novo Portal Disponível</div>
-    <div class="redirect-sub">
-      Você será redirecionado automaticamente para o novo sistema.<br>
-      Caso não seja redirecionado, clique abaixo.
-    </div>
+  <!-- SUA LOGO -->
+  <img src="logo-areia-ana.png" class="logo">
 
-    <button class="redirect-btn" onclick="irNovoPortal()">
-      Acessar Novo Portal
-    </button>
-  </div>
-</div>
+  <h1>Portal Atualizado</h1>
 
-<!-- PORTAL ANTIGO -->
-<div class="container" id="portal">
+  <p>Estamos direcionando você para o novo portal.</p>
+  <p>Caso não redirecione automaticamente:</p>
 
-<header>
-  <img src="./logo-areia-ana.png" class="logo">
-  <h1>Portal de Acessos – Grupo Areia Ana</h1>
-</header>
-
-<div class="main-menu">
-  <button class="menu-btn active" onclick="showSection('indicadores',this)">Indicadores</button>
-  <button class="menu-btn" onclick="showSection('comercial',this)">Comercial</button>
-  <button class="menu-btn" onclick="showSection('rh',this)">RH</button>
-  <button class="menu-btn" onclick="showSection('sistemas',this)">Sistemas</button>
-  <button class="menu-btn" onclick="showSection('calendario',this)">Calendário</button>
-</div>
-
-<!-- CALENDÁRIO AJUSTADO -->
-<section id="calendario" class="section hidden">
-  <div class="section-title">Calendário Corporativo</div>
-
-  <div class="grid-calendario">
-
-    <!-- LINK CORRIGIDO -->
-    <a class="link-card" target="_blank"
-       href="https://master-areiaana.github.io/agenda-areia-ana">
-      <div class="link-title">Calendário Corporativo – Areia Ana</div>
-      <div class="link-meta">Abrir agenda completa</div>
-    </a>
-
-    <!-- PLANEJAMENTO -->
-    <a class="link-card" target="_blank"
-       href="https://app.clickup.com/9007105436/v/l/8cdv1cw-423">
-      <div class="link-title">Planejamento e Controle</div>
-      <div class="link-meta">ClickUp</div>
-    </a>
-
-  </div>
-</section>
+  <a class="btn" href="https://master-areiaana.github.io/portal-areia-ana/">
+    Acessar Novo Portal
+  </a>
 
 </div>
-
-<script>
-// 🔥 LINK JÁ CONFIGURADO
-const NOVO_PORTAL = "https://master-areiaana.github.io/portal-areia-ana/";
-
-// redireciona automático
-setTimeout(()=>{
-  window.location.href = NOVO_PORTAL;
-},3000);
-
-// botão manual
-function irNovoPortal(){
-  window.location.href = NOVO_PORTAL;
-}
-
-// abas
-function showSection(id,btn){
-  document.querySelectorAll(".section").forEach(s=>s.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-
-  document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-}
-</script>
 
 </body>
 </html>
