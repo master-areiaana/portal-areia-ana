@@ -5,17 +5,17 @@
   <title>Portal de Acessos</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    :root{--bg-radial-top:#151821;--bg-radial-mid:#050814;--bg-radial-end:#02030a;--bg-card:#0b1020;--bg-card-soft:#101629;--accent:#ff7a1a;--accent-soft:#ff9b4a;--text:#f5f7ff;--text-soft:#c2c7ff;--border-card:rgba(255,154,74,.25);--border-card-hover:#ff9b4a;--overlay-bg:rgba(11,16,32,.78);--input-bg:rgba(5,8,20,.55);--input-placeholder:rgba(194,199,255,.55);--title-color:#ff9b4a;--shadow-login:0 18px 60px rgba(0,0,0,.55);--shadow-card:0 10px 24px rgba(0,0,0,.12);--logo-box-bg:rgba(255,255,255,.98);--logo-box-border:rgba(255,154,74,.20);--logo-box-shadow:0 10px 24px rgba(0,0,0,.18)}
-    body.light-mode{--bg-radial-top:#fffdf9;--bg-radial-mid:#fff7ef;--bg-radial-end:#fff3e6;--bg-card:#fff;--bg-card-soft:#fff8f1;--text:#1e293b;--text-soft:#64748b;--border-card:rgba(255,122,26,.26);--border-card-hover:#ff7a1a;--overlay-bg:rgba(255,251,245,.96);--input-bg:#fff;--input-placeholder:rgba(100,116,139,.72);--title-color:#ff7a1a;--shadow-login:0 18px 60px rgba(255,122,26,.08);--shadow-card:0 10px 24px rgba(255,122,26,.08);--logo-box-bg:rgba(255,255,255,.98);--logo-box-border:rgba(255,122,26,.18);--logo-box-shadow:0 10px 24px rgba(255,122,26,.08)}
+    :root{--bg-radial-top:#151821;--bg-radial-mid:#050814;--bg-radial-end:#02030a;--bg-card:#0b1020;--bg-card-soft:#101629;--accent:#ff7a1a;--accent-soft:#ff9b4a;--text:#f5f7ff;--text-soft:#c2c7ff;--border-card:rgba(255,154,74,.25);--border-card-hover:#ff9b4a;--overlay-bg:rgba(11,16,32,.78);--input-bg:rgba(5,8,20,.55);--input-placeholder:rgba(194,199,255,.55);--title-color:#ff9b4a;--shadow-login:0 18px 60px rgba(0,0,0,.55);--shadow-card:0 10px 24px rgba(0,0,0,.12)}
+    body.light-mode{--bg-radial-top:#fffdf9;--bg-radial-mid:#fff7ef;--bg-radial-end:#fff3e6;--bg-card:#fff;--bg-card-soft:#fff8f1;--text:#1e293b;--text-soft:#64748b;--border-card:rgba(255,122,26,.26);--border-card-hover:#ff7a1a;--overlay-bg:rgba(255,251,245,.96);--input-bg:#fff;--input-placeholder:rgba(100,116,139,.72);--title-color:#ff7a1a;--shadow-login:0 18px 60px rgba(255,122,26,.08);--shadow-card:0 10px 24px rgba(255,122,26,.08)}
     *{box-sizing:border-box} body{font-family:system-ui,sans-serif;background:radial-gradient(circle at top,var(--bg-radial-top) 0,var(--bg-radial-mid) 45%,var(--bg-radial-end) 100%);color:var(--text);margin:0;padding:24px;min-height:100vh;transition:background .2s ease,color .2s ease}
     .top-actions{max-width:1150px;margin:0 auto 12px auto;display:flex;justify-content:flex-end;position:relative;z-index:10001}
     .theme-toggle{border:1px solid var(--border-card);background:var(--bg-card);color:var(--text);border-radius:999px;padding:10px 16px;cursor:pointer;font-size:13px;font-weight:700;transition:.15s;box-shadow:var(--shadow-card)}
     .theme-toggle:hover{transform:translateY(-1px);background:var(--bg-card-soft);border-color:var(--border-card-hover)}
     .login-overlay{position:fixed;inset:0;background:radial-gradient(circle at top,var(--bg-radial-top) 0,var(--bg-radial-mid) 45%,var(--bg-radial-end) 100%);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px}
     .login-box{width:min(720px,92vw);padding:56px 64px;border-radius:18px;background:var(--overlay-bg);border:1px solid rgba(255,154,74,.22);box-shadow:var(--shadow-login);text-align:center;backdrop-filter:blur(6px)}
-    .logo-frame{display:inline-flex;align-items:center;justify-content:center;padding:14px 18px;border-radius:18px;background:var(--logo-box-bg);border:1px solid var(--logo-box-border);box-shadow:var(--logo-box-shadow);margin:0 auto 18px auto}
+    .logo-frame{display:inline-flex;align-items:center;justify-content:center;padding:0;border-radius:0;background:transparent;border:none;box-shadow:none;margin:0 auto 18px auto}
     .logo-frame.header-logo-frame{margin-bottom:14px}
-    .login-logo,.logo{display:block;object-fit:contain;filter:none!important;mix-blend-mode:normal!important;opacity:1!important}
+    .login-logo,.logo{display:block;object-fit:contain;filter:none!important;mix-blend-mode:normal!important;opacity:1!important;background:transparent!important}
     .login-logo{width:190px;max-width:80%;margin:0} .logo{width:180px;margin:0}
     .login-title{font-size:34px;font-weight:800;margin:0 0 10px 0;letter-spacing:.2px} .login-subtitle,.subtitle,.link-meta{color:var(--text-soft)} .login-subtitle{margin:0 0 26px 0;font-size:14px}
     .login-row{display:grid;gap:16px;margin-top:8px;justify-items:center}
@@ -32,7 +32,7 @@
     .link-card{padding:14px;background:var(--bg-card);border-radius:12px;border:1px solid var(--border-card);text-decoration:none;color:var(--text);transition:.15s;display:block;box-shadow:var(--shadow-card)}
     .link-card:hover{transform:translateY(-2px);background:var(--bg-card-soft);border-color:var(--border-card-hover)} .link-title{font-size:15px;font-weight:600} .link-meta{font-size:11px}
     @media (max-width:900px){.main-menu{grid-template-columns:repeat(2,1fr)}}
-    @media (max-width:560px){body{padding:16px}.top-actions{margin-bottom:10px}.login-box{padding:36px 24px}.login-title{font-size:28px}.main-menu{grid-template-columns:1fr}.logo,.login-logo{width:150px}.logo-frame{padding:10px 14px;border-radius:14px}}
+    @media (max-width:560px){body{padding:16px}.top-actions{margin-bottom:10px}.login-box{padding:36px 24px}.login-title{font-size:28px}.main-menu{grid-template-columns:1fr}.logo,.login-logo{width:150px}}
   </style>
 </head>
 <body>
@@ -105,7 +105,7 @@
     </div></section>
   </div>
   <script>
-    const SENHA_CORRETA = atob('YXJlaWFhZG1pbg==');
+    const SENHA_CORRETA=atob('YXJlaWFhZG1pbg==');
     function aplicarTema(theme){const body=document.body;const botao=document.getElementById('themeToggle');if(theme==='light'){body.classList.add('light-mode');botao.textContent='Modo escuro'}else{body.classList.remove('light-mode');botao.textContent='Modo claro'}localStorage.setItem('portalTheme',theme)}
     function toggleTheme(){const atual=document.body.classList.contains('light-mode')?'light':'dark';aplicarTema(atual==='dark'?'light':'dark')}
     function abrirPortal(){document.getElementById('loginOverlay').style.display='none';document.getElementById('portal').style.display='block'}
