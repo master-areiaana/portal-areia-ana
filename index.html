@@ -8,12 +8,42 @@
   <style>
     :root {
       --bg: #050814;
+      --bg-radial-top: #151821;
+      --bg-radial-mid: #050814;
+      --bg-radial-end: #02030a;
       --bg-card: #0b1020;
       --bg-card-soft: #101629;
       --accent: #ff7a1a;
       --accent-soft: #ff9b4a;
       --text: #f5f7ff;
       --text-soft: #c2c7ff;
+      --border-card: rgba(255, 154, 74, 0.25);
+      --border-card-hover: #ff9b4a;
+      --overlay-bg: rgba(11, 16, 32, 0.75);
+      --input-bg: rgba(5,8,20,.55);
+      --input-placeholder: rgba(194,199,255,.55);
+      --title-color: #ff9b4a;
+      --shadow-login: 0 18px 60px rgba(0,0,0,.55);
+    }
+
+    body.light-mode {
+      --bg: #f4f6fb;
+      --bg-radial-top: #ffffff;
+      --bg-radial-mid: #eef2fb;
+      --bg-radial-end: #e4e9f5;
+      --bg-card: #ffffff;
+      --bg-card-soft: #f7f9fe;
+      --accent: #ff7a1a;
+      --accent-soft: #ff9b4a;
+      --text: #152033;
+      --text-soft: #5f6c84;
+      --border-card: rgba(255, 122, 26, 0.22);
+      --border-card-hover: #ff7a1a;
+      --overlay-bg: rgba(255, 255, 255, 0.88);
+      --input-bg: rgba(255,255,255,.92);
+      --input-placeholder: rgba(95,108,132,.6);
+      --title-color: #ff7a1a;
+      --shadow-login: 0 18px 60px rgba(21,32,51,.12);
     }
 
     * {
@@ -22,18 +52,44 @@
 
     body {
       font-family: system-ui, sans-serif;
-      background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
+      background: radial-gradient(circle at top, var(--bg-radial-top) 0, var(--bg-radial-mid) 45%, var(--bg-radial-end) 100%);
       color: var(--text);
       margin: 0;
       padding: 24px;
       min-height: 100vh;
+      transition: background .2s ease, color .2s ease;
+    }
+
+    .top-actions {
+      max-width: 1150px;
+      margin: 0 auto 12px auto;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .theme-toggle {
+      border: 1px solid var(--border-card);
+      background: var(--bg-card);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      transition: .15s;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      background: var(--bg-card-soft);
+      border-color: var(--border-card-hover);
     }
 
     /* ===================== LOGIN (SENHA) ===================== */
     .login-overlay{
       position: fixed;
       inset: 0;
-      background: radial-gradient(circle at top, #151821 0, #050814 45%, #02030a 100%);
+      background: radial-gradient(circle at top, var(--bg-radial-top) 0, var(--bg-radial-mid) 45%, var(--bg-radial-end) 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -45,9 +101,9 @@
       width: min(720px, 92vw);
       padding: 56px 64px;
       border-radius: 18px;
-      background: rgba(11, 16, 32, 0.75);
+      background: var(--overlay-bg);
       border: 1px solid rgba(255, 154, 74, 0.22);
-      box-shadow: 0 18px 60px rgba(0,0,0,.55);
+      box-shadow: var(--shadow-login);
       text-align: center;
       backdrop-filter: blur(6px);
     }
@@ -58,7 +114,7 @@
       display: block;
       margin: 0 auto 18px auto;
       object-fit: contain;
-      filter: drop-shadow(0 8px 20px rgba(0,0,0,.35));
+      filter: drop-shadow(0 8px 20px rgba(0,0,0,.25));
     }
 
     .login-title{
@@ -86,7 +142,7 @@
       height: 52px;
       border-radius: 14px;
       border: 1px solid rgba(255,154,74,.22);
-      background: rgba(5,8,20,.55);
+      background: var(--input-bg);
       color: var(--text);
       padding: 0 18px;
       outline: none;
@@ -94,7 +150,7 @@
     }
 
     .login-input::placeholder{
-      color: rgba(194,199,255,.55);
+      color: var(--input-placeholder);
     }
 
     .login-btn{
@@ -169,6 +225,10 @@
       transition: .15s;
     }
 
+    body.light-mode .menu-btn {
+      background: linear-gradient(135deg, rgba(255,122,26,0.08), rgba(255,255,255,0.98));
+    }
+
     .menu-btn.active {
       background: linear-gradient(135deg, var(--accent), var(--accent-soft));
       color: #050814;
@@ -190,17 +250,15 @@
     .section-title {
       font-size: 18px;
       margin-bottom: 14px;
-      color: var(--accent-soft);
+      color: var(--title-color);
     }
 
-    /* GRID PADRÃO DOS CARDS */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 12px;
     }
 
-    /* GRID DO CALENDÁRIO */
     .grid-calendario {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 420px));
@@ -212,7 +270,7 @@
       padding: 14px;
       background: var(--bg-card);
       border-radius: 12px;
-      border: 1px solid rgba(255, 154, 74, 0.25);
+      border: 1px solid var(--border-card);
       text-decoration: none;
       color: var(--text);
       transition: .15s;
@@ -222,23 +280,7 @@
     .link-card:hover {
       transform: translateY(-2px);
       background: var(--bg-card-soft);
-      border-color: var(--accent-soft);
-    }
-
-    .link-card.cobranca-card {
-      background: #050814;
-      border: 1px solid rgba(255, 154, 74, 0.25);
-      color: #ffffff;
-    }
-
-    .link-card.cobranca-card:hover {
-      background: #0b1020;
-      border-color: var(--accent-soft);
-    }
-
-    .link-card.cobranca-card .link-meta {
-      color: #ffffff;
-      opacity: 0.9;
+      border-color: var(--border-card-hover);
     }
 
     .link-title {
@@ -262,6 +304,10 @@
         padding: 16px;
       }
 
+      .top-actions {
+        margin-bottom: 10px;
+      }
+
       .login-box {
         padding: 36px 24px;
       }
@@ -283,6 +329,10 @@
 </head>
 
 <body>
+
+  <div class="top-actions">
+    <button class="theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()">Modo claro</button>
+  </div>
 
   <!-- ===================== TELA DE SENHA ===================== -->
   <div class="login-overlay" id="loginOverlay">
@@ -313,14 +363,12 @@
   <!-- ===================== PORTAL ===================== -->
   <div class="container" id="portal">
 
-    <!-- LOGO / TÍTULO -->
     <header>
       <img src="./logo-areia-ana.png" class="logo" alt="Logo Areia Ana">
       <h1>Portal de Acessos – Grupo Areia Ana</h1>
       <p class="subtitle">Escolha uma área e clique para abrir o painel ou sistema.</p>
     </header>
 
-    <!-- MENU -->
     <div class="main-menu">
       <button class="menu-btn active" onclick="showSection('indicadores', this)">Indicadores</button>
       <button class="menu-btn" onclick="showSection('comercial', this)">Comercial</button>
@@ -329,11 +377,9 @@
       <button class="menu-btn" onclick="showSection('calendario', this)">Calendário</button>
     </div>
 
-    <!-- INDICADORES -->
     <section id="indicadores" class="section">
       <div class="section-title">Indicadores – Power BI</div>
       <div class="grid">
-
         <a class="link-card" target="_blank" href="https://app.powerbi.com/view?r=eyJrIjoiNjM2OGI4ZmEtOTc3Zi00NjgzLWE3MDUtYzk0NDBmMDAyN2Y2IiwidCI6ImNjYjc4MDg1LWRkNjMtNDM3Ny05MWRjLTQ4MjQ0MjRhYzViZiJ9">
           <div class="link-title">Remessas Usina</div>
           <div class="link-meta">Power BI</div>
@@ -369,19 +415,16 @@
           <div class="link-meta">Power BI</div>
         </a>
 
-        <a class="link-card cobranca-card" href="https://master-areiaana.github.io/Sistema-de-cobranca/" target="_self">
+        <a class="link-card" href="https://master-areiaana.github.io/Sistema-de-cobranca/" target="_self">
           <div class="link-title">Cobrança</div>
           <div class="link-meta">Controle de Cobrança</div>
         </a>
-
       </div>
     </section>
 
-    <!-- COMERCIAL -->
     <section id="comercial" class="section hidden">
       <div class="section-title">Comercial – ClickUp</div>
       <div class="grid">
-
         <a class="link-card" target="_blank" href="https://sharing.clickup.com/9007105436/l/h/8cdv1cw-11213/9e63db75b1c3352">
           <div class="link-title">Lista de Oportunidades – Anderson</div>
           <div class="link-meta">ClickUp</div>
@@ -411,15 +454,12 @@
           <div class="link-title">Metas e Roteiro Comercial</div>
           <div class="link-meta">ClickUp Docs</div>
         </a>
-
       </div>
     </section>
 
-    <!-- RH -->
     <section id="rh" class="section hidden">
       <div class="section-title">RH</div>
       <div class="grid">
-
         <a class="link-card" target="_blank" href="https://superportal-empregador.vr.com.br/pontomais">
           <div class="link-title">Ponto Mais</div>
           <div class="link-meta">Controle de Ponto</div>
@@ -429,15 +469,12 @@
           <div class="link-title">RH Gestor</div>
           <div class="link-meta">Sistema de RH</div>
         </a>
-
       </div>
     </section>
 
-    <!-- SISTEMAS -->
     <section id="sistemas" class="section hidden">
       <div class="section-title">Sistemas Gerais</div>
       <div class="grid">
-
         <a class="link-card" target="_blank" href="https://ctasmart.com.br:8443/login">
           <div class="link-title">CTA Smart</div>
           <div class="link-meta">Abastecimento</div>
@@ -477,11 +514,9 @@
           <div class="link-title">Portais CIGAM</div>
           <div class="link-meta">ERP CIGAM</div>
         </a>
-
       </div>
     </section>
 
-    <!-- CALENDÁRIO -->
     <section id="calendario" class="section hidden">
       <div class="section-title">Calendário Corporativo</div>
       <div class="grid-calendario">
@@ -496,11 +531,30 @@
         </a>
       </div>
     </section>
-
   </div>
 
   <script>
     const SENHA_CORRETA = "areiaadmin";
+
+    function aplicarTema(theme) {
+      const body = document.body;
+      const botao = document.getElementById("themeToggle");
+
+      if (theme === "light") {
+        body.classList.add("light-mode");
+        botao.textContent = "Modo escuro";
+      } else {
+        body.classList.remove("light-mode");
+        botao.textContent = "Modo claro";
+      }
+
+      localStorage.setItem("portalTheme", theme);
+    }
+
+    function toggleTheme() {
+      const atual = document.body.classList.contains("light-mode") ? "light" : "dark";
+      aplicarTema(atual === "dark" ? "light" : "dark");
+    }
 
     function abrirPortal() {
       document.getElementById("loginOverlay").style.display = "none";
@@ -520,6 +574,9 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      const temaSalvo = localStorage.getItem("portalTheme") || "dark";
+      aplicarTema(temaSalvo);
+
       document.getElementById("senha").addEventListener("keydown", (e) => {
         if (e.key === "Enter") validarSenha();
       });
