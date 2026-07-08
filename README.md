@@ -18,10 +18,9 @@ A `main` não deve ser alterada até validação completa.
 - Login por e-mail e senha via Supabase Auth.
 - Busca do contexto do usuário via função `portal_get_my_context()`.
 - Exibição somente das abas e cards permitidos.
-- Aba Controle de Acessos para gerenciar profiles, status, cards e permissões por perfil.
+- Aba Controle de Acessos para gerenciar usuários, status, permissões por perfil, links do portal e logs.
 - Fluxo de convite de acesso via Edge Function, sem expor `service_role_key` no navegador.
 - Recuperação de senha pelo próprio portal.
-- Ajuda de senha dentro de Controle de Acessos para orientar o suporte sem expor senhas.
 - Soft delete de acesso com status `excluido`, sem apagar o usuário do Supabase Auth.
 - Logs básicos em `portal_audit_logs`.
 - Links atuais migrados para `portal_resources`.
@@ -86,12 +85,28 @@ A `anonKey` é pública por design. Nunca coloque `service_role_key` no front-en
 
 ## Perfis de acesso
 
-- **suporte**: único perfil com `is_admin = true`. Acesso total real ao portal, incluindo a aba **Controle de Acessos** (usuários, permissões, cards e logs). É quem cria/libera usuários, altera permissões e bloqueia/desbloqueia/exclui acessos.
+- **suporte**: único perfil com `is_admin = true`. Acesso total real ao portal, incluindo a aba **Controle de Acessos**. É quem cria/libera usuários, altera permissões por perfil, mantém links, acompanha logs e bloqueia/desbloqueia/exclui acessos.
 - **admin** (Admin / Diretoria): perfil legado da Diretoria, com `is_admin = false`. Mantém acesso amplo às abas normais (Indicadores, Comercial, RH, Sistemas, Calendário), mas **não** acessa a aba Controle de Acessos e não pode gerenciar usuários/permissões.
 - **diretoria**: mesmo padrão de acesso amplo do perfil admin, também sem acesso à aba Controle de Acessos.
 - Demais perfis (**gestao, comercial, cobranca, rh, operacional, consulta**): seguem as permissões específicas já configuradas em `seed.sql`, sem qualquer acesso à aba Controle de Acessos.
 
 A aba mantém o código interno `admin` no banco de dados por compatibilidade, mas é exibida na tela como **"Controle de Acessos"**.
+
+## Controle de Acessos
+
+A área de suporte foi organizada para separar acesso de manutenção técnica:
+
+- **Usuários**: cadastro/liberação de usuários, status, envio de convite, alteração de senha por e-mail e exclusão de acesso.
+- **Permissões por Perfil**: define o padrão de acesso por perfil. É aqui que o suporte libera ou bloqueia quais abas/cards cada perfil pode acessar.
+- **Logs**: histórico/auditoria de ações do portal.
+- **Links do Portal**: manutenção dos links/cards existentes, como título, subtítulo, sensibilidade e ativo/inativo. Esta aba não é usada para liberar acesso.
+
+Regra conceitual:
+
+```text
+Permissões = quem pode acessar.
+Links do Portal = quais links/cards existem no portal.
+```
 
 ## Como cadastrar ou liberar usuários
 
@@ -102,7 +117,7 @@ Os funcionários nunca acessam o Supabase diretamente. Todo o fluxo é feito pel
 3. Preencha nome, e-mail, perfil, status, cargo, área, unidade, gestor, validade e observações (se aplicável).
 4. Clique em **Enviar convite de acesso**.
 5. O sistema chama a Edge Function `portal-admin-user`, que cria ou localiza o usuário no Supabase Auth, salva o profile e envia um e-mail oficial do Supabase para o funcionário criar a própria senha.
-6. Se o usuário já existir no Auth, o portal apenas cria/atualiza o `portal_profiles` e envia um link de redefinição de senha.
+6. Se o usuário já existir no Auth, o portal apenas cria/atualiza o `portal_profiles` e envia um link de alteração de senha.
 7. O funcionário recebe o e-mail, clica no link, define a senha na tela **Criar nova senha** do próprio portal e depois faz login normalmente.
 
 O suporte nunca vê, digita ou define a senha de nenhum usuário.
@@ -125,7 +140,7 @@ Proteções obrigatórias:
 - O acesso `portalcore.consult@gmail.com` é protegido contra exclusão pela interface e pela Edge Function.
 - A validação real fica na Edge Function, não apenas no front-end.
 
-## Recuperação e ajuda de senha
+## Recuperação e alteração de senha
 
 Na tela de login existe o link **Esqueci minha senha**:
 
@@ -135,12 +150,7 @@ Na tela de login existe o link **Esqueci minha senha**:
 4. Ao clicar no link recebido, o usuário volta para o portal, que detecta o evento de recuperação e mostra a tela **Criar nova senha** (nova senha + confirmação).
 5. Ao salvar, o portal chama `supabase.auth.updateUser({ password })` e exibe "Senha atualizada com sucesso. Faça login novamente."
 
-Dentro da aba Controle de Acessos, o suporte também pode:
-
-- clicar em **Reenviar redefinição** ao lado de qualquer usuário para reenviar o link de redefinição de senha;
-- clicar em **Ajuda de senha** para ver a orientação operacional: clicar uma única vez em Reenviar redefinição, orientar o usuário a verificar Caixa de entrada, Spam, Lixo eletrônico, Promoções e Atualizações, e aguardar em caso de limite de e-mail.
-
-O suporte nunca deve ver, digitar, enviar ou definir senha para o usuário.
+Dentro da aba Controle de Acessos, o suporte pode clicar em **Alterar senha** ao lado de qualquer usuário. Esse botão apenas envia um link para o usuário criar uma nova senha. O suporte nunca deve ver, digitar, enviar ou definir senha para o usuário.
 
 ## Limite de envio de e-mail
 
@@ -166,7 +176,7 @@ Essa função roda no servidor do Supabase (nunca no navegador) e é a única pa
 
 - Recebe o JWT do usuário logado que fez a chamada.
 - Confirma no banco (nunca confiando no payload enviado) que quem chamou está com status `ativo` e tem perfil `suporte` com `is_admin = true`. Qualquer outro perfil recebe "Acesso negado".
-- Cria ou localiza o usuário no Supabase Auth e envia o e-mail de convite ou de redefinição, conforme o caso.
+- Cria ou localiza o usuário no Supabase Auth e envia o e-mail de convite ou de alteração de senha, conforme o caso.
 - Atualiza `portal_profiles` usando a RPC `portal_admin_upsert_profile_by_email`.
 - Executa soft delete de acesso com `status = excluido` quando solicitado.
 - Registra logs em `portal_audit_logs`.
@@ -182,24 +192,25 @@ Esconder um link no portal não bloqueia uma pessoa que já tenha o link direto 
 
 Existem dois deploys diferentes:
 
-1. **Edge Function**: precisa ser publicada no Supabase. Afeta o projeto Supabase diretamente.
+1. **Edge Function**: precisa ser publicada no Supabase quando `supabase/functions/portal-admin-user/index.ts` mudar. Afeta o projeto Supabase diretamente.
 2. **GitHub Pages**: precisa rodar o workflow `Deploy static content to Pages` na branch `ajuste-supabase-acessos-alcadas` para atualizar o front-end publicado.
 
 Não faça merge na `main` antes de validar os dois.
 
 ## Testes mínimos
 
-- Suporte entra e vê todas as abas, incluindo Controle de Acessos, e consegue gerenciar usuários/permissões/logs/cards.
+- Suporte entra e vê todas as abas, incluindo Controle de Acessos, e consegue gerenciar usuários/permissões/logs/links.
 - Admin/Diretoria entra e vê as abas normais, mas não vê nem acessa a aba Controle de Acessos.
 - Comercial não vê RH/Controle de Acessos.
 - Cobrança vê os cards liberados e não vê DRE, se não for liberado.
 - RH vê RH e Calendário.
 - Usuário inativo/bloqueado/excluido não acessa.
-- Botões Enviar convite, Reenviar redefinição, Salvar e Excluir acesso travam durante a requisição e não aceitam duplo clique.
-- Botão Ajuda de senha mostra orientação sem disparar envio de e-mail.
+- Botões Enviar convite, Alterar senha, Salvar e Excluir acesso travam durante a requisição e não aceitam duplo clique.
+- Alterar senha pede confirmação antes de enviar o link.
 - Erro de limite de e-mail aparece como mensagem amigável.
 - Excluir acesso muda o status para `excluido`, não apaga o Auth user e cria log.
 - Reativar usuário excluído funciona alterando status para `ativo` ou enviando novo convite.
+- Links do Portal serve apenas para manutenção dos links/cards, não para liberação de acesso.
 - Logout funciona.
 - Modo claro/escuro continua funcionando.
 - Links existentes continuam abrindo.
