@@ -56,42 +56,81 @@ from (values
 join public.portal_modules m on m.codigo = v.module_codigo
 on conflict (codigo) do update set module_id=excluded.module_id,titulo=excluded.titulo,subtitulo=excluded.subtitulo,url=excluded.url,target=excluded.target,ordem=excluded.ordem,sensibilidade=excluded.sensibilidade,ativo=excluded.ativo,updated_at=now();
 
+-- Este seed redefine apenas as permissões padrão dos perfis iniciais.
+delete from public.portal_role_permissions rp
+using public.portal_roles r
+where rp.role_id = r.id
+  and r.codigo in ('admin','diretoria','gestao','comercial','cobranca','rh','operacional','consulta');
+
 -- Admin: tudo.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, null, true, true, true from public.portal_roles r cross join public.portal_modules m where r.codigo='admin'
-on conflict (role_id, module_id) where resource_id is null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, null, true, true, true
+from public.portal_roles r
+cross join public.portal_modules m
+where r.codigo = 'admin';
 
--- Diretoria, gestão e áreas com abas inteiras.
+-- Diretoria: todas as abas principais, exceto Admin.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, null, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo in ('indicadores','comercial','rh','sistemas','calendario') where r.codigo='diretoria'
-on conflict (role_id, module_id) where resource_id is null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, null, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo in ('indicadores','comercial','rh','sistemas','calendario')
+where r.codigo = 'diretoria';
+
+-- Gestão.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, null, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo in ('indicadores','comercial','sistemas','calendario') where r.codigo='gestao'
-on conflict (role_id, module_id) where resource_id is null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, null, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo in ('indicadores','comercial','sistemas','calendario')
+where r.codigo = 'gestao';
+
+-- Comercial.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, null, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo in ('comercial','calendario') where r.codigo='comercial'
-on conflict (role_id, module_id) where resource_id is null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, null, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo in ('comercial','calendario')
+where r.codigo = 'comercial';
+
+-- RH.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, null, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo in ('rh','calendario') where r.codigo='rh'
-on conflict (role_id, module_id) where resource_id is null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, null, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo in ('rh','calendario')
+where r.codigo = 'rh';
+
+-- Operacional.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, null, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo in ('sistemas','calendario') where r.codigo='operacional'
-on conflict (role_id, module_id) where resource_id is null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, null, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo in ('sistemas','calendario')
+where r.codigo = 'operacional';
 
 -- Cobrança: acesso parcial por card.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, res.id, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo='indicadores' join public.portal_resources res on res.module_id=m.id and res.codigo in ('ind_inadimplentes','ind_cobranca','ind_volume_carteira_usina') where r.codigo='cobranca'
-on conflict (role_id, module_id, resource_id) where resource_id is not null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, res.id, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo = 'indicadores'
+join public.portal_resources res on res.module_id = m.id and res.codigo in ('ind_inadimplentes','ind_cobranca','ind_volume_carteira_usina')
+where r.codigo = 'cobranca';
+
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, res.id, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo='calendario' join public.portal_resources res on res.module_id=m.id where r.codigo='cobranca'
-on conflict (role_id, module_id, resource_id) where resource_id is not null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, res.id, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo = 'calendario'
+join public.portal_resources res on res.module_id = m.id
+where r.codigo = 'cobranca';
 
 -- Operacional: indicadores operacionais parciais.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, res.id, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo='indicadores' join public.portal_resources res on res.module_id=m.id and res.codigo in ('ind_remessas_usina','ind_pedidos_agregados','ind_custo_km_hora') where r.codigo='operacional'
-on conflict (role_id, module_id, resource_id) where resource_id is not null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, res.id, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo = 'indicadores'
+join public.portal_resources res on res.module_id = m.id and res.codigo in ('ind_remessas_usina','ind_pedidos_agregados','ind_custo_km_hora')
+where r.codigo = 'operacional';
 
 -- Consulta: somente calendário corporativo.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
-select r.id, m.id, res.id, true, true, false from public.portal_roles r join public.portal_modules m on m.codigo='calendario' join public.portal_resources res on res.module_id=m.id and res.codigo='cal_corporativo' where r.codigo='consulta'
-on conflict (role_id, module_id, resource_id) where resource_id is not null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+select r.id, m.id, res.id, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo = 'calendario'
+join public.portal_resources res on res.module_id = m.id and res.codigo = 'cal_corporativo'
+where r.codigo = 'consulta';
