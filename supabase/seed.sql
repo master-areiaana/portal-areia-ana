@@ -4,7 +4,8 @@
 -- =========================================================
 
 insert into public.portal_roles (codigo, nome, descricao, is_admin) values
-  ('admin','Administrador','Acesso total ao portal e à aba Admin.', true),
+  ('suporte','Suporte','Acesso total técnico para criação de usuários, permissões, logs e controle de acessos.', true),
+  ('admin','Admin / Diretoria','Acesso amplo ao portal, sem controle de usuários e permissões.', false),
   ('diretoria','Diretoria','Acesso amplo aos indicadores, sistemas e áreas gerenciais.', false),
   ('gestao','Gestão','Acesso gerencial sem administração de usuários.', false),
   ('comercial','Comercial','Acesso ao comercial, calendário e indicadores liberados.', false),
@@ -20,7 +21,7 @@ insert into public.portal_modules (codigo, nome, descricao, ordem, ativo) values
   ('rh','RH','Sistemas e acessos de recursos humanos.', 3, true),
   ('sistemas','Sistemas','Sistemas gerais e operacionais.', 4, true),
   ('calendario','Calendário','Agenda e planejamento corporativo.', 5, true),
-  ('admin','Admin','Administração de usuários e permissões.', 6, true)
+  ('admin','Controle de Acessos','Administração de usuários e permissões.', 6, true)
 on conflict (codigo) do update set nome=excluded.nome, descricao=excluded.descricao, ordem=excluded.ordem, ativo=excluded.ativo, updated_at=now();
 
 insert into public.portal_resources (module_id, codigo, titulo, subtitulo, url, target, ordem, sensibilidade, ativo)
@@ -60,16 +61,23 @@ on conflict (codigo) do update set module_id=excluded.module_id,titulo=excluded.
 delete from public.portal_role_permissions rp
 using public.portal_roles r
 where rp.role_id = r.id
-  and r.codigo in ('admin','diretoria','gestao','comercial','cobranca','rh','operacional','consulta');
+  and r.codigo in ('suporte','admin','diretoria','gestao','comercial','cobranca','rh','operacional','consulta');
 
--- Admin: tudo.
+-- Suporte: acesso total real, único perfil com Controle de Acessos.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
 select r.id, m.id, null, true, true, true
 from public.portal_roles r
 cross join public.portal_modules m
+where r.codigo = 'suporte';
+
+-- Admin / Diretoria (perfil legado): todas as abas principais, exceto Controle de Acessos.
+insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
+select r.id, m.id, null, true, true, false
+from public.portal_roles r
+join public.portal_modules m on m.codigo in ('indicadores','comercial','rh','sistemas','calendario')
 where r.codigo = 'admin';
 
--- Diretoria: todas as abas principais, exceto Admin.
+-- Diretoria: todas as abas principais, exceto Controle de Acessos.
 insert into public.portal_role_permissions (role_id, module_id, resource_id, can_view, can_open, can_manage)
 select r.id, m.id, null, true, true, false
 from public.portal_roles r
