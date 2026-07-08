@@ -55,6 +55,10 @@ No painel do Supabase, execute nesta ordem:
 4. Crie o primeiro usuário em `Authentication > Users`
 5. Confirme em `supabase/bootstrap_admin.sql` o e-mail do usuário de Suporte (padrão: portalcore.consult@gmail.com)
 6. Execute `supabase/bootstrap_admin.sql`
+7. Em `Authentication > URL Configuration`, configure:
+   - Site URL: `https://master-areiaana.github.io/portal-areia-ana/`
+   - Redirect URLs: adicione a mesma URL acima.
+8. Publique a Edge Function `supabase/functions/portal-admin-user/index.ts` (Edge Functions > Deploy a new function).
 
 ## Configuração do front-end
 
@@ -84,14 +88,46 @@ A `anonKey` é pública por design. Nunca coloque `service_role_key` no front-en
 
 A aba mantém o código interno `admin` no banco de dados por compatibilidade, mas é exibida na tela como **"Controle de Acessos"**.
 
-## Como cadastrar novos usuários na v1
+## Como cadastrar novos usuários
 
-1. Acesse Supabase > Authentication > Users.
-2. Crie o usuário com e-mail e senha provisória.
-3. Entre no portal com um usuário do perfil **suporte**.
-4. Vá na aba Controle de Acessos > Usuários.
-5. Cadastre o profile usando o mesmo e-mail criado no Supabase Auth.
-6. Escolha perfil e status.
+Os funcionários nunca acessam o Supabase diretamente. Todo o fluxo é feito pelo próprio portal:
+
+1. Entre no portal com um usuário do perfil **suporte**.
+2. Vá na aba Controle de Acessos > Usuários.
+3. Preencha nome, e-mail, perfil, status, cargo, área, unidade, gestor, validade e observações (se aplicável).
+4. Clique em **Enviar convite de acesso**.
+5. O sistema chama a Edge Function `portal-admin-user`, que cria ou localiza o usuário no Supabase Auth, salva o profile e envia um e-mail oficial do Supabase para o funcionário criar a própria senha.
+6. O funcionário recebe o e-mail, clica no link, define a senha na tela **Criar nova senha** do próprio portal e depois faz login normalmente.
+
+O suporte nunca vê, digita ou define a senha de nenhum usuário.
+
+## Recuperação de senha
+
+Na tela de login existe o link **Esqueci minha senha**:
+
+1. O usuário informa o e-mail.
+2. O portal chama `supabase.auth.resetPasswordForEmail(...)`, usando somente a `anonKey` pública.
+3. É sempre exibida a mesma mensagem, exista ou não o e-mail cadastrado: "Se este e-mail estiver cadastrado, você receberá um link para redefinir sua senha."
+4. Ao clicar no link recebido, o usuário volta para o portal, que detecta o evento de recuperação e mostra a tela **Criar nova senha** (nova senha + confirmação).
+5. Ao salvar, o portal chama `supabase.auth.updateUser({ password })` e exibe "Senha atualizada com sucesso. Faça login novamente."
+
+Dentro da aba Controle de Acessos, o suporte também pode clicar em **Reenviar redefinição** ao lado de qualquer usuário, para reenviar esse mesmo link de redefinição de senha.
+
+## Edge Function portal-admin-user
+
+Local do código-fonte:
+
+```text
+supabase/functions/portal-admin-user/index.ts
+```
+
+Essa função roda no servidor do Supabase (nunca no navegador) e é a única parte do sistema que usa a `service_role_key` (lida somente de variáveis de ambiente do próprio Supabase, nunca hardcoded). Ela:
+
+- Recebe o JWT do usuário logado que fez a chamada.
+- Confirma no banco (nunca confiando no payload enviado) que quem chamou está com status `ativo` e tem perfil `suporte` com `is_admin = true`. Qualquer outro perfil recebe "Acesso negado".
+- Cria ou localiza o usuário no Supabase Auth e envia o e-mail de convite ou de redefinição, conforme o caso.
+- Atualiza `portal_profiles` usando a RPC `portal_admin_upsert_profile_by_email`.
+- Registra um log em `portal_audit_logs`.
 
 ## Limite importante
 
