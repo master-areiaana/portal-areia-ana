@@ -21,6 +21,7 @@ A `main` não deve ser alterada até validação completa.
 - Aba Controle de Acessos para gerenciar profiles, status, cards e permissões por perfil.
 - Fluxo de convite de acesso via Edge Function, sem expor `service_role_key` no navegador.
 - Recuperação de senha pelo próprio portal.
+- Ajuda de senha dentro de Controle de Acessos para orientar o suporte sem expor senhas.
 - Soft delete de acesso com status `excluido`, sem apagar o usuário do Supabase Auth.
 - Logs básicos em `portal_audit_logs`.
 - Links atuais migrados para `portal_resources`.
@@ -124,7 +125,7 @@ Proteções obrigatórias:
 - O acesso `portalcore.consult@gmail.com` é protegido contra exclusão pela interface e pela Edge Function.
 - A validação real fica na Edge Function, não apenas no front-end.
 
-## Recuperação de senha
+## Recuperação e ajuda de senha
 
 Na tela de login existe o link **Esqueci minha senha**:
 
@@ -134,7 +135,12 @@ Na tela de login existe o link **Esqueci minha senha**:
 4. Ao clicar no link recebido, o usuário volta para o portal, que detecta o evento de recuperação e mostra a tela **Criar nova senha** (nova senha + confirmação).
 5. Ao salvar, o portal chama `supabase.auth.updateUser({ password })` e exibe "Senha atualizada com sucesso. Faça login novamente."
 
-Dentro da aba Controle de Acessos, o suporte também pode clicar em **Reenviar redefinição** ao lado de qualquer usuário, para reenviar esse mesmo link de redefinição de senha.
+Dentro da aba Controle de Acessos, o suporte também pode:
+
+- clicar em **Reenviar redefinição** ao lado de qualquer usuário para reenviar o link de redefinição de senha;
+- clicar em **Ajuda de senha** para ver a orientação operacional: clicar uma única vez em Reenviar redefinição, orientar o usuário a verificar Caixa de entrada, Spam, Lixo eletrônico, Promoções e Atualizações, e aguardar em caso de limite de e-mail.
+
+O suporte nunca deve ver, digitar, enviar ou definir senha para o usuário.
 
 ## Limite de envio de e-mail
 
@@ -190,6 +196,7 @@ Não faça merge na `main` antes de validar os dois.
 - RH vê RH e Calendário.
 - Usuário inativo/bloqueado/excluido não acessa.
 - Botões Enviar convite, Reenviar redefinição, Salvar e Excluir acesso travam durante a requisição e não aceitam duplo clique.
+- Botão Ajuda de senha mostra orientação sem disparar envio de e-mail.
 - Erro de limite de e-mail aparece como mensagem amigável.
 - Excluir acesso muda o status para `excluido`, não apaga o Auth user e cria log.
 - Reativar usuário excluído funciona alterando status para `ativo` ou enviando novo convite.
