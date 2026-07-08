@@ -113,24 +113,67 @@ begin
 end;
 $$;
 
+-- Usa UPDATE + INSERT em vez de ON CONFLICT parcial dentro do PL/pgSQL.
+-- Isso evita erro de parsing no Supabase SQL Editor e mantém a mesma regra de upsert.
 create or replace function public.portal_admin_set_role_permission(p_role_codigo text, p_module_codigo text, p_resource_codigo text default null, p_can_view boolean default false, p_can_open boolean default false, p_can_manage boolean default false)
 returns void language plpgsql security definer set search_path = public as $$
-declare v_role_id uuid; v_module_id uuid; v_resource_id uuid;
+declare
+  v_role_id uuid;
+  v_module_id uuid;
+  v_resource_id uuid;
 begin
-  if not public.portal_is_admin() then raise exception 'Acesso negado: somente admin pode alterar permissões.'; end if;
+  if not public.portal_is_admin() then
+    raise exception 'Acesso negado: somente admin pode alterar permissões.';
+  end if;
+
   select id into v_role_id from public.portal_roles where codigo = p_role_codigo;
   select id into v_module_id from public.portal_modules where codigo = p_module_codigo;
-  if v_role_id is null then raise exception 'Perfil não encontrado: %', p_role_codigo; end if;
-  if v_module_id is null then raise exception 'Módulo não encontrado: %', p_module_codigo; end if;
-  if p_resource_codigo is null or p_resource_codigo = '' then
-    insert into public.portal_role_permissions(role_id,module_id,resource_id,can_view,can_open,can_manage) values (v_role_id,v_module_id,null,p_can_view,p_can_open,p_can_manage)
-    on conflict (role_id, module_id) where resource_id is null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
-  else
-    select id into v_resource_id from public.portal_resources where codigo = p_resource_codigo and module_id = v_module_id;
-    if v_resource_id is null then raise exception 'Recurso não encontrado: %', p_resource_codigo; end if;
-    insert into public.portal_role_permissions(role_id,module_id,resource_id,can_view,can_open,can_manage) values (v_role_id,v_module_id,v_resource_id,p_can_view,p_can_open,p_can_manage)
-    on conflict (role_id, module_id, resource_id) where resource_id is not null do update set can_view=excluded.can_view,can_open=excluded.can_open,can_manage=excluded.can_manage;
+
+  if v_role_id is null then
+    raise exception 'Perfil não encontrado: %', p_role_codigo;
   end if;
+
+  if v_module_id is null then
+    raise exception 'Módulo não encontrado: %', p_module_codigo;
+  end if;
+
+  if p_resource_codigo is null or p_resource_codigo = '' then
+    update public.portal_role_permissions
+       set can_view = p_can_view,
+           can_open = p_can_open,
+           can_manage = p_can_manage
+     where role_id = v_role_id
+       and module_id = v_module_id
+       and resource_id is null;
+
+    if not found then
+      insert into public.portal_role_permissions(role_id, module_id, resource_id, can_view, can_open, can_manage)
+      values (v_role_id, v_module_id, null, p_can_view, p_can_open, p_can_manage);
+    end if;
+  else
+    select id into v_resource_id
+      from public.portal_resources
+     where codigo = p_resource_codigo
+       and module_id = v_module_id;
+
+    if v_resource_id is null then
+      raise exception 'Recurso não encontrado: %', p_resource_codigo;
+    end if;
+
+    update public.portal_role_permissions
+       set can_view = p_can_view,
+           can_open = p_can_open,
+           can_manage = p_can_manage
+     where role_id = v_role_id
+       and module_id = v_module_id
+       and resource_id = v_resource_id;
+
+    if not found then
+      insert into public.portal_role_permissions(role_id, module_id, resource_id, can_view, can_open, can_manage)
+      values (v_role_id, v_module_id, v_resource_id, p_can_view, p_can_open, p_can_manage);
+    end if;
+  end if;
+
   perform public.portal_log_event('role_permission_set', 'portal_role_permissions', null, jsonb_build_object('role_codigo',p_role_codigo,'module_codigo',p_module_codigo,'resource_codigo',p_resource_codigo,'can_view',p_can_view));
 end;
 $$;
