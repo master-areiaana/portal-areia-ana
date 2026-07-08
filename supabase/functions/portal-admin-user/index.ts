@@ -6,6 +6,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SITE_URL = "https://master-areiaana.github.io/portal-areia-ana/";
+const PROTECTED_SUPPORT_EMAIL = "portalcore.consult@gmail.com";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -17,6 +18,51 @@ function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
+}
+
+function errorMessage(error) {
+  return String(error?.message || error?.error_description || error?.error || "");
+}
+
+function errorStatus(error) {
+  return Number(error?.status || error?.statusCode || error?.code || 0);
+}
+
+function isRateLimitError(error) {
+  const msg = errorMessage(error);
+  return errorStatus(error) === 429 || /rate\s*limit|too many|email rate limit/i.test(msg);
+}
+
+function rateLimitResponse() {
+  return jsonResponse(
+    {
+      error: "email_rate_limit",
+      message: "Limite de envio de e-mails atingido. Aguarde alguns minutos ou configure SMTP proprio.",
+    },
+    429,
+  );
+}
+
+async function findUserByEmail(adminClient, email) {
+  for (let page = 1; page <= 10; page += 1) {
+    const listRes = await adminClient.auth.admin.listUsers({ page, perPage: 1000 });
+    if (listRes.error) throw listRes.error;
+    const users = (listRes.data && listRes.data.users) || [];
+    const found = users.find((u) => (u.email || "").toLowerCase() === email);
+    if (found) return found;
+    if (users.length < 1000) break;
+  }
+  return null;
+}
+
+async function logAction(adminClient, actorUserId, action, entityType, entityId, details = {}) {
+  await adminClient.from("portal_audit_logs").insert({
+    actor_user_id: actorUserId,
+    action,
+    entity_type: entityType,
+    entity_id: entityId,
+    details,
   });
 }
 
@@ -51,6 +97,7 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: "Acesso negado." }, 401);
   }
   const callerId = authData.user.id;
+  const callerEmail = String(authData.user.email || "").toLowerCase();
 
   const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false },
@@ -87,80 +134,150 @@ Deno.serve(async (req) => {
   const email = String(body.email || "").trim().toLowerCase();
   if (!email) return jsonResponse({ error: "E-mail e obrigatorio." }, 400);
 
-  if (action === "invite") {
-    const nome = body.nome ? String(body.nome).trim() : "";
-    const roleCodigo = body.role_codigo ? String(body.role_codigo).trim() : "";
-    const status = body.status ? String(body.status).trim() : "ativo";
-    const cargo = body.cargo || null;
-    const area = body.area || null;
-    const unidade = body.unidade || null;
-    const gestor = body.gestor || null;
-    const validade = body.validade_acesso || null;
-    const observacoes = body.observacoes || null;
+  try {
+    if (action === "invite") {
+      const nome = body.nome ? String(body.nome).trim() : "";
+      const roleCodigo = body.role_codigo ? String(body.role_codigo).trim() : "";
+      const status = body.status ? String(body.status).trim() : "ativo";
+      const cargo = body.cargo || null;
+      const area = body.area || null;
+      const unidade = body.unidade || null;
+      const gestor = body.gestor || null;
+      const validade = body.validade_acesso || null;
+      const observacoes = body.observacoes || null;
+      const allowedStatus = ["ativo", "inativo", "bloqueado", "excluido"];
 
-    if (!nome || !roleCodigo) {
-      return jsonResponse({ error: "Nome e perfil sao obrigatorios." }, 400);
-    }
-
-    let targetUserId = null;
-    const inviteRes = await adminClient.auth.admin.inviteUserByEmail(email, { redirectTo: SITE_URL });
-
-    if (inviteRes.error) {
-      const msg = inviteRes.error.message || "";
-      const alreadyExists = /already registered|already exists|already been registered/i.test(msg);
-      if (!alreadyExists) {
-        return jsonResponse({ error: "Nao foi possivel enviar o convite." }, 400);
+      if (!nome || !roleCodigo) {
+        return jsonResponse({ error: "Nome e perfil sao obrigatorios." }, 400);
       }
-      const listRes = await adminClient.auth.admin.listUsers();
-      if (listRes.error) return jsonResponse({ error: "Nao foi possivel localizar o usuario." }, 400);
-      const users = (listRes.data && listRes.data.users) || [];
-      const existing = users.find((u) => (u.email || "").toLowerCase() === email);
-      if (!existing) return jsonResponse({ error: "Nao foi possivel localizar o usuario." }, 400);
-      targetUserId = existing.id;
-      await adminClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL });
-    } else {
-      targetUserId = (inviteRes.data && inviteRes.data.user && inviteRes.data.user.id) || null;
+      if (!allowedStatus.includes(status)) {
+        return jsonResponse({ error: "Status invalido." }, 400);
+      }
+
+      let targetUserId = null;
+      let emailWarning = null;
+      const inviteRes = await adminClient.auth.admin.inviteUserByEmail(email, { redirectTo: SITE_URL });
+
+      if (inviteRes.error) {
+        const msg = errorMessage(inviteRes.error);
+        const alreadyExists = /already registered|already exists|already been registered/i.test(msg);
+        if (isRateLimitError(inviteRes.error)) {
+          return rateLimitResponse();
+        }
+        if (!alreadyExists) {
+          return jsonResponse({ error: "Nao foi possivel enviar o convite." }, 400);
+        }
+
+        const existing = await findUserByEmail(adminClient, email);
+        if (!existing) return jsonResponse({ error: "Nao foi possivel localizar o usuario." }, 400);
+        targetUserId = existing.id;
+
+        const resetRes = await adminClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL });
+        if (resetRes.error) {
+          if (isRateLimitError(resetRes.error)) {
+            emailWarning = "email_rate_limit";
+          } else {
+            emailWarning = "email_send_failed";
+          }
+        }
+      } else {
+        targetUserId = (inviteRes.data && inviteRes.data.user && inviteRes.data.user.id) || null;
+      }
+
+      const upsertRes = await callerClient.rpc("portal_admin_upsert_profile_by_email", {
+        p_email: email,
+        p_nome: nome,
+        p_role_codigo: roleCodigo,
+        p_status: status,
+        p_cargo: cargo,
+        p_area: area,
+        p_unidade: unidade,
+        p_gestor: gestor,
+        p_validade_acesso: validade,
+        p_observacoes: observacoes,
+      });
+
+      if (upsertRes.error) {
+        return jsonResponse({ error: "Usuario criado no Auth, mas houve erro ao salvar o profile." }, 400);
+      }
+
+      await logAction(adminClient, callerId, "invite_user", "portal_profiles", targetUserId, {
+        email,
+        role_codigo: roleCodigo,
+        status,
+        email_warning: emailWarning,
+      });
+
+      if (emailWarning === "email_rate_limit") {
+        return jsonResponse({
+          ok: true,
+          warning: "email_rate_limit",
+          message: "Acesso atualizado, mas o e-mail nao foi enviado porque o limite de envio foi atingido. Aguarde e tente reenviar depois.",
+        });
+      }
+      if (emailWarning === "email_send_failed") {
+        return jsonResponse({
+          ok: true,
+          warning: "email_send_failed",
+          message: "Acesso atualizado, mas o e-mail de redefinicao nao foi enviado. Tente reenviar depois.",
+        });
+      }
+
+      return jsonResponse({ ok: true, message: "Convite enviado. O usuario recebera um e-mail para criar sua senha de acesso." });
     }
 
-    const upsertRes = await callerClient.rpc("portal_admin_upsert_profile_by_email", {
-      p_email: email,
-      p_nome: nome,
-      p_role_codigo: roleCodigo,
-      p_status: status,
-      p_cargo: cargo,
-      p_area: area,
-      p_unidade: unidade,
-      p_gestor: gestor,
-      p_validade_acesso: validade,
-      p_observacoes: observacoes,
-    });
+    if (action === "resend_reset") {
+      const resetRes = await adminClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL });
+      if (resetRes.error) {
+        if (isRateLimitError(resetRes.error)) {
+          await logAction(adminClient, callerId, "resend_password_reset_rate_limited", "portal_profiles", null, { email });
+          return rateLimitResponse();
+        }
+        return jsonResponse({ error: "Nao foi possivel reenviar o e-mail de redefinicao." }, 400);
+      }
 
-    if (upsertRes.error) {
-      return jsonResponse({ error: "Usuario criado no Auth, mas houve erro ao salvar o profile." }, 400);
+      await logAction(adminClient, callerId, "resend_password_reset", "portal_profiles", null, { email });
+      return jsonResponse({ ok: true, message: "Se este e-mail estiver cadastrado, um link de redefinicao foi enviado." });
     }
 
-    await callerClient.rpc("portal_log_event", {
-      p_action: "invite_user",
-      p_entity_type: "portal_profiles",
-      p_entity_id: targetUserId,
-      p_details: { email },
-    });
+    if (action === "delete_access") {
+      if (email === callerEmail || email === PROTECTED_SUPPORT_EMAIL) {
+        return jsonResponse({ error: "Nao e permitido excluir o proprio acesso de suporte." }, 403);
+      }
 
-    return jsonResponse({ ok: true, message: "Convite enviado. O usuario recebera um e-mail para criar sua senha de acesso." });
+      const targetProfileRes = await adminClient
+        .from("portal_profiles")
+        .select("id, email, status")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (targetProfileRes.error) {
+        return jsonResponse({ error: "Nao foi possivel localizar o acesso." }, 400);
+      }
+      if (!targetProfileRes.data) {
+        return jsonResponse({ ok: true, message: "Este usuario ja nao possui acesso liberado no portal." });
+      }
+
+      const updateRes = await adminClient
+        .from("portal_profiles")
+        .update({ status: "excluido", updated_at: new Date().toISOString() })
+        .eq("id", targetProfileRes.data.id);
+
+      if (updateRes.error) {
+        return jsonResponse({ error: "Nao foi possivel excluir o acesso." }, 400);
+      }
+
+      await logAction(adminClient, callerId, "delete_access", "portal_profiles", targetProfileRes.data.id, {
+        email,
+        previous_status: targetProfileRes.data.status,
+        new_status: "excluido",
+      });
+
+      return jsonResponse({ ok: true, message: "Acesso excluido. O usuario nao podera mais acessar o portal." });
+    }
+
+    return jsonResponse({ error: "Acao invalida." }, 400);
+  } catch (_e) {
+    return jsonResponse({ error: "Erro interno ao processar a solicitacao." }, 500);
   }
-
-  if (action === "resend_reset") {
-    await adminClient.auth.resetPasswordForEmail(email, { redirectTo: SITE_URL });
-
-    await callerClient.rpc("portal_log_event", {
-      p_action: "resend_password_reset",
-      p_entity_type: "portal_profiles",
-      p_entity_id: null,
-      p_details: { email },
-    });
-
-    return jsonResponse({ ok: true, message: "Se este e-mail estiver cadastrado, um link de redefinicao foi enviado." });
-  }
-
-  return jsonResponse({ error: "Acao invalida." }, 400);
 });
