@@ -48,7 +48,7 @@ create table if not exists public.portal_profiles (
   area text,
   unidade text,
   gestor text,
-  status text not null default 'ativo' check (status in ('ativo','inativo','bloqueado')),
+  status text not null default 'ativo' check (status in ('ativo','inativo','bloqueado','excluido')),
   role_id uuid references public.portal_roles(id),
   validade_acesso date,
   observacoes text,
