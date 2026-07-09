@@ -22,6 +22,7 @@ A `main` não deve ser alterada até validação completa.
 - Fluxo de convite de acesso via Edge Function, sem expor `service_role_key` no navegador.
 - Recuperação de senha pelo próprio portal.
 - Soft delete de acesso com status `excluido`, sem apagar o usuário do Supabase Auth.
+- Usuários excluídos ficam ocultos por padrão na lista principal, com opção de mostrar excluídos para consulta/reativação.
 - Logs básicos em `portal_audit_logs`.
 - Links atuais migrados para `portal_resources`.
 
@@ -132,6 +133,8 @@ A exclusão é um soft delete:
 - O usuário do Supabase Auth não é apagado.
 - O histórico e os logs são mantidos.
 - O usuário deixa de acessar o portal porque somente `status = ativo` libera entrada.
+- O usuário excluído fica oculto por padrão na lista principal de usuários cadastrados.
+- O suporte pode clicar em **Mostrar excluídos** para consultar ou reativar acessos excluídos.
 - O acesso pode ser liberado novamente no futuro alterando o status para `ativo` ou enviando novo convite pelo formulário.
 
 Proteções obrigatórias:
@@ -209,6 +212,8 @@ Não faça merge na `main` antes de validar os dois.
 - Alterar senha pede confirmação antes de enviar o link.
 - Erro de limite de e-mail aparece como mensagem amigável.
 - Excluir acesso muda o status para `excluido`, não apaga o Auth user e cria log.
+- Usuários excluídos ficam ocultos por padrão na lista principal.
+- Botão Mostrar excluídos exibe os excluídos para consulta/reativação.
 - Reativar usuário excluído funciona alterando status para `ativo` ou enviando novo convite.
 - Links do Portal serve apenas para manutenção dos links/cards, não para liberação de acesso.
 - Logout funciona.
