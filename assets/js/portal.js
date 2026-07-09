@@ -24,19 +24,31 @@ if(data.profile.status!=='ativo'){showLogin('Seu acesso está inativo ou bloquea
 state.context=data;
 $('userName').textContent=data.profile.nome||data.profile.username||data.profile.email;
 $('userRole').textContent=data.role?.nome||'Sem perfil';
-renderMenu(data.modules||[]);
-renderSections(data.modules||[],data.resources||[]);
+const modules=data.modules||[];
+const resources=data.resources||[];
+if(!modules.length){
+  renderEmptyAccess();
+  showPortal();
+  await log('login_without_permissions');
+  return;
+}
+renderMenu(modules);
+renderSections(modules,resources);
 showPortal();
-if((data.modules||[])[0]) showSection(data.modules[0].codigo);
+showSection(modules[0].codigo);
 await log('login_ok');
 }
 
+function renderEmptyAccess(){
+  $('mainMenu').innerHTML='';
+  $('sectionsRoot').innerHTML='<div class="empty-card" style="text-align:center;margin-top:24px;"><strong>Nenhum acesso liberado para este usuário.</strong><br><span class="link-meta">Entre com o suporte e libere as abas/cards em Controle de Acessos &gt; Permissões por Usuário.</span></div>';
+}
 function groupResources(resources){return (resources||[]).reduce((acc,r)=>{acc[r.module_id]=acc[r.module_id]||[];acc[r.module_id].push(r);return acc;},{});}
 function renderMenu(modules){$('mainMenu').innerHTML=modules.map((m,i)=>`<button class="menu-btn ${i===0?'active':''}" type="button" data-module="${esc(m.codigo)}">${esc(m.nome)}</button>`).join('');document.querySelectorAll('[data-module]').forEach(b=>b.onclick=()=>showSection(b.dataset.module));}
 function renderSections(modules,resources){
 const grouped=groupResources(resources);
 $('sectionsRoot').innerHTML=modules.map((m,i)=>{
-const cards=m.codigo==='admin'?'<div id="adminRoot"></div>':`<div class="grid">${(grouped[m.id]||[]).map(card).join('')||'<div class="empty-card">Nenhum recurso liberado.</div>'}</div>`;
+const cards=m.codigo==='admin'?'<div id="adminRoot"></div>':`<div class="grid">${(grouped[m.id]||[]).map(card).join('')||'<div class="empty-card">Nenhum recurso liberado nesta aba.</div>'}</div>`;
 return `<section id="section-${esc(m.codigo)}" class="section ${i===0?'':'hidden'}"><div class="section-title">${esc(m.nome)}</div>${cards}</section>`;
 }).join('');
 document.querySelectorAll('[data-resource-code]').forEach(a=>a.onclick=()=>log('open_resource','portal_resources',null,{resource_code:a.dataset.resourceCode,title:a.dataset.resourceTitle}));
