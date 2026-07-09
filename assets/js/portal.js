@@ -19,10 +19,10 @@ const c=window.PortalSupabase.getClient();
 const {data,error}=await c.rpc('portal_get_my_context');
 if(error)throw error;
 if(!data||data.authenticated===false){showLogin();return;}
-if(!data.profile){showLogin('Seu usuário ainda não foi configurado no portal. Solicite liberação ao administrador.');return;}
-if(data.profile.status!=='ativo'){showLogin('Seu acesso está inativo ou bloqueado. Solicite liberação ao administrador.');return;}
+if(!data.profile){showLogin('Seu usuário ainda não foi configurado no portal. Solicite liberação ao suporte.');return;}
+if(data.profile.status!=='ativo'){showLogin('Seu acesso está inativo ou bloqueado. Solicite liberação ao suporte.');return;}
 state.context=data;
-$('userName').textContent=data.profile.nome||data.profile.email;
+$('userName').textContent=data.profile.nome||data.profile.username||data.profile.email;
 $('userRole').textContent=data.role?.nome||'Sem perfil';
 renderMenu(data.modules||[]);
 renderSections(data.modules||[],data.resources||[]);
@@ -44,7 +44,7 @@ document.querySelectorAll('[data-resource-code]').forEach(a=>a.onclick=()=>log('
 function card(r){return `<a class="link-card" target="${esc(r.target||'_blank')}" href="${esc(r.url)}" data-resource-code="${esc(r.codigo)}" data-resource-title="${esc(r.titulo)}"><div class="link-title">${esc(r.titulo)}</div><div class="link-meta">${esc(r.subtitulo||'')}</div></a>`;}
 function showSection(code){state.active=code;document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));const target=$(`section-${code}`);if(target)target.classList.remove('hidden');document.querySelectorAll('.menu-btn').forEach(b=>b.classList.toggle('active',b.dataset.module===code));if(code==='admin'&&window.PortalAdmin)window.PortalAdmin.mount(state.context);}
 
-async function handleLogin(ev){ev.preventDefault();$('erroLogin').style.display='none';try{await window.PortalAuth.signIn($('email').value.trim().toLowerCase(),$('senha').value);await loadContext();}catch(e){$('erroLogin').textContent=e.message&&e.message.includes('Invalid login credentials')?'E-mail ou senha incorretos.':(e.message||'Não foi possível entrar.');$('erroLogin').style.display='block';}}
+async function handleLogin(ev){ev.preventDefault();$('erroLogin').style.display='none';try{await window.PortalAuth.signIn($('email').value.trim().toLowerCase(),$('senha').value);await loadContext();}catch(e){const msg=e.message||'Não foi possível entrar.';$('erroLogin').textContent=msg.includes('Invalid login credentials')?'Usuário ou senha incorretos.':msg;$('erroLogin').style.display='block';}}
 async function logout(){await log('logout');await window.PortalAuth.signOut();state.context=null;showLogin();}
 
 async function handleForgotSubmit(ev){ev.preventDefault();const msg=$('forgotMsg');msg.className='admin-message';msg.textContent='Enviando...';const email=$('forgotEmail').value.trim().toLowerCase();try{await window.PortalAuth.requestPasswordReset(email);}catch(e){}msg.textContent='Se este e-mail estiver cadastrado, você receberá um link para redefinir sua senha.';msg.className='admin-message success';}
