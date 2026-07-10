@@ -1,12 +1,13 @@
 // Edge Function: portal-admin-user
 // Cria/localiza usuarios no Supabase Auth e atualiza o portal_profiles.
-// Somente usuarios com perfil "suporte" (is_admin=true, status=ativo) podem chamar esta funcao.
+// Usuarios com perfil suporte, admin ou diretoria ativos podem chamar esta funcao.
 // A service_role_key e usada apenas aqui dentro, nunca no front-end.
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const SITE_URL = "https://master-areiaana.github.io/portal-areia-ana/";
 const PROTECTED_SUPPORT_EMAIL = "portalcore.consult@gmail.com";
+const MANAGER_ROLES = ["suporte", "admin", "diretoria"];
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -105,11 +106,13 @@ Deno.serve(async (req) => {
 
   const profileRes = await adminClient
     .from("portal_profiles")
-    .select("status, role_id")
+    .select("status, role_id, validade_acesso")
     .eq("id", callerId)
     .maybeSingle();
 
-  if (profileRes.error || !profileRes.data || profileRes.data.status !== "ativo") {
+  const today = new Date().toISOString().slice(0, 10);
+  const activeByDate = !profileRes.data?.validade_acesso || String(profileRes.data.validade_acesso).slice(0, 10) >= today;
+  if (profileRes.error || !profileRes.data || profileRes.data.status !== "ativo" || !activeByDate) {
     return jsonResponse({ error: "Acesso negado." }, 403);
   }
 
@@ -119,7 +122,9 @@ Deno.serve(async (req) => {
     .eq("id", profileRes.data.role_id)
     .maybeSingle();
 
-  if (roleRes.error || !roleRes.data || roleRes.data.codigo !== "suporte" || roleRes.data.is_admin !== true) {
+  const roleCodigo = String(roleRes.data?.codigo || "").toLowerCase();
+  const canManageAccess = MANAGER_ROLES.includes(roleCodigo) && (roleCodigo !== "suporte" || roleRes.data?.is_admin === true);
+  if (roleRes.error || !roleRes.data || !canManageAccess) {
     return jsonResponse({ error: "Acesso negado." }, 403);
   }
 
@@ -133,11 +138,14 @@ Deno.serve(async (req) => {
   const action = body.action;
   const email = String(body.email || "").trim().toLowerCase();
   if (!email) return jsonResponse({ error: "E-mail e obrigatorio." }, 400);
+  if (email === PROTECTED_SUPPORT_EMAIL) {
+    return jsonResponse({ error: "A conta tecnica protegida nao pode ser alterada por esta tela." }, 403);
+  }
 
   try {
     if (action === "invite") {
       const nome = body.nome ? String(body.nome).trim() : "";
-      const roleCodigo = body.role_codigo ? String(body.role_codigo).trim() : "";
+      const roleCodigoTarget = body.role_codigo ? String(body.role_codigo).trim() : "";
       const status = body.status ? String(body.status).trim() : "ativo";
       const cargo = body.cargo || null;
       const area = body.area || null;
@@ -147,7 +155,7 @@ Deno.serve(async (req) => {
       const observacoes = body.observacoes || null;
       const allowedStatus = ["ativo", "inativo", "bloqueado", "excluido"];
 
-      if (!nome || !roleCodigo) {
+      if (!nome || !roleCodigoTarget) {
         return jsonResponse({ error: "Nome e perfil sao obrigatorios." }, 400);
       }
       if (!allowedStatus.includes(status)) {
@@ -187,7 +195,7 @@ Deno.serve(async (req) => {
       const upsertRes = await callerClient.rpc("portal_admin_upsert_profile_by_email", {
         p_email: email,
         p_nome: nome,
-        p_role_codigo: roleCodigo,
+        p_role_codigo: roleCodigoTarget,
         p_status: status,
         p_cargo: cargo,
         p_area: area,
@@ -203,7 +211,7 @@ Deno.serve(async (req) => {
 
       await logAction(adminClient, callerId, "invite_user", "portal_profiles", targetUserId, {
         email,
-        role_codigo: roleCodigo,
+        role_codigo: roleCodigoTarget,
         status,
         email_warning: emailWarning,
       });
@@ -242,7 +250,7 @@ Deno.serve(async (req) => {
 
     if (action === "delete_access") {
       if (email === callerEmail || email === PROTECTED_SUPPORT_EMAIL) {
-        return jsonResponse({ error: "Nao e permitido excluir o proprio acesso de suporte." }, 403);
+        return jsonResponse({ error: "Nao e permitido excluir este acesso protegido." }, 403);
       }
 
       const targetProfileRes = await adminClient
