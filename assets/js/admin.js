@@ -36,11 +36,12 @@ async function load(){
 }
 
 function render(){
-  document.getElementById('adminRoot').innerHTML=`<div class="admin-panel"><div class="admin-tabs"><button class="admin-tab active" data-tab="users">Usuários</button><button class="admin-tab" data-tab="userPermissions">Permissões por Usuário</button><button class="admin-tab" data-tab="logs">Logs</button><button class="admin-tab" data-tab="resources">Links do Portal</button></div><div id="adminContent"></div></div>`;
+  const technicalTabs=isSupport(state.context)?'<button class="admin-tab" data-tab="logs">Logs</button><button class="admin-tab" data-tab="resources">Links do Portal</button>':'';
+  document.getElementById('adminRoot').innerHTML=`<div class="admin-panel"><div class="admin-tabs"><button class="admin-tab active" data-tab="users">Usuários</button><button class="admin-tab" data-tab="userPermissions">Permissões por Usuário</button>${technicalTabs}</div><div id="adminContent"></div></div>`;
   document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('.admin-tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderTab(b.dataset.tab);});
   renderTab('users');
 }
-function renderTab(tab){if(tab==='users')return users();if(tab==='userPermissions')return userPermissions();if(tab==='resources')return resources();return logs();}
+function renderTab(tab){if(tab==='users')return users();if(tab==='userPermissions')return userPermissions();if(tab==='resources'&&isSupport(state.context))return resources();if(tab==='logs'&&isSupport(state.context))return logs();return users();}
 function statusOptions(selected){return ['ativo','inativo','bloqueado','excluido'].map(s=>`<option value="${s}" ${selected===s?'selected':''}>${s==='ativo'?'Ativo':s==='inativo'?'Inativo':s==='bloqueado'?'Bloqueado':'Excluído'}</option>`).join('');}
 function setMsg(text,type='',id='adminMsg'){const msg=document.getElementById(id)||document.getElementById('adminMsg')||document.getElementById('userPermMsg');if(!msg)return;msg.textContent=text;msg.className=`admin-message ${type}`.trim();}
 async function runWithLoading(btn,loadingText,fn){if(!btn||btn.dataset.loading==='true')return;const original=btn.textContent;btn.dataset.loading='true';btn.disabled=true;btn.textContent=loadingText;try{return await fn();}finally{btn.dataset.loading='false';btn.disabled=false;btn.textContent=original;}}
