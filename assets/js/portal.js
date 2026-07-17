@@ -14,6 +14,32 @@ function showPortal(){$('loginOverlay').style.display='none';$('portal').style.d
 
 async function log(action,entityType=null,entityId=null,details=null){try{const c=window.PortalSupabase.getClient();if(c)await c.rpc('portal_log_event',{p_action:action,p_entity_type:entityType,p_entity_id:entityId,p_details:details});}catch(e){console.warn('Log não registrado:',e.message);}}
 
+function normalizePortalResources(modules,resources){
+const list=[...(resources||[])];
+const indicadores=modules.find((m)=>m.codigo==='indicadores');
+if(!indicadores)return list;
+
+const cobranca=list.find((r)=>r.codigo==='ind_cobranca');
+if(cobranca){
+  cobranca.url='https://master-areiaana.github.io/sistema-simplificado-cobranca/';
+  cobranca.target='_self';
+}
+
+if(!list.some((r)=>r.codigo==='ind_controle_caixas')){
+  list.push({
+    module_id:indicadores.id,
+    codigo:'ind_controle_caixas',
+    titulo:'Controle de Caixas',
+    subtitulo:'Planilha de controle',
+    url:'https://docs.google.com/spreadsheets/d/1TFBoGNH5Y_m6j848ariKT6QxfiBg4E_X0tIRkscEIw0/edit?resourcekey=&gid=1730102927#gid=1730102927',
+    target:'_blank',
+    ordem:9
+  });
+}
+
+return list.sort((a,b)=>(a.ordem||0)-(b.ordem||0));
+}
+
 async function loadContext(){
 const c=window.PortalSupabase.getClient();
 const {data,error}=await c.rpc('portal_get_my_context');
@@ -25,7 +51,7 @@ state.context=data;
 $('userName').textContent=data.profile.nome||data.profile.username||data.profile.email;
 $('userRole').textContent=data.role?.nome||'Sem perfil';
 const modules=data.modules||[];
-const resources=data.resources||[];
+const resources=normalizePortalResources(modules,data.resources||[]);
 if(!modules.length){
   renderEmptyAccess();
   showPortal();
