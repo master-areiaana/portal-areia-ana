@@ -32,7 +32,7 @@ select
   'ind_controle_caixas',
   'Controle de Caixas',
   'Planilha de controle',
-  'https://docs.google.com/spreadsheets/d/1TFBoGNH5Y_m6j848ariKT6QxfiBg4E_X0tIRkscEIw0/edit?resourcekey=&gid=1730102927#gid=1730102927',
+  'https://docs.google.com/spreadsheets/d/1lFmIpjsUEi8UjPvzpbf0RAaweYZUcLruYft0QTNOD5w/edit?gid=1355465713#gid=1355465713',
   '_blank',
   9,
   'alta',
