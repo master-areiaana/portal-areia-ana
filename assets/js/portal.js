@@ -31,7 +31,7 @@ if(!list.some((r)=>r.codigo==='ind_controle_caixas')){
     codigo:'ind_controle_caixas',
     titulo:'Controle de Caixas',
     subtitulo:'Planilha de controle',
-    url:'https://docs.google.com/spreadsheets/d/1TFBoGNH5Y_m6j848ariKT6QxfiBg4E_X0tIRkscEIw0/edit?resourcekey=&gid=1730102927#gid=1730102927',
+    url:'https://docs.google.com/spreadsheets/d/1xGJbCVOw5oJymklpdvQXVoKlD5oz9y2qL7JM977vqUU/edit?gid=1355465713#gid=1355465713',
     target:'_blank',
     ordem:9
   });
