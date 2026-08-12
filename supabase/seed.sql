@@ -35,7 +35,7 @@ from (values
   ('indicadores','ind_volume_carteira_usina','Volume de Carteira – Usina','Power BI','https://app.powerbi.com/view?r=eyJrIjoiYWI2N2FlYjgtODJhNi00ODZhLThjMDgtNTZlMGYyMjk4N2Y2IiwidCI6ImNjYjc4MDg1LWRkNjMtNDM3Ny05MWRjLTQ4MjQ0MjRhYzViZiJ9','_blank',6,'alta'),
   ('indicadores','ind_custo_km_hora','Custo por KM / Hora','Power BI','https://app.powerbi.com/view?r=eyJrIjoiOTQzNGRhNjQtYjNjZi00YTZjLTkxNzMtODc2MTUzZGQ0MWY5IiwidCI6ImNjYjc4MDg1LWRkNjMtNDM3Ny05MWRjLTQ4MjQ0MjRhYzViZiJ9','_blank',7,'media'),
   ('indicadores','ind_cobranca','Cobrança','Controle de Cobrança','https://master-areiaana.github.io/sistema-simplificado-cobranca/','_self',8,'alta'),
-  ('indicadores','ind_controle_caixas','Controle de Caixas','Planilha de controle','https://docs.google.com/spreadsheets/d/1xGJbCVOw5oJymklpdvQXVoKlD5oz9y2qL7JM977vqUU/edit?gid=1730102927#gid=1730102927','_blank',9,'alta'),
+  ('indicadores','ind_controle_caixas','Controle de Caixas','Planilha de controle','https://docs.google.com/spreadsheets/d/1lFmIpjsUEi8UjPvzpbf0RAaweYZUcLruYft0QTNOD5w/edit?gid=1355465713#gid=1355465713','_blank',9,'alta'),
   ('comercial','com_oport_anderson','Lista de Oportunidades – Anderson','ClickUp','https://sharing.clickup.com/9007105436/l/h/8cdv1cw-11213/9e63db75b1c3352','_blank',1,'media'),
   ('comercial','com_oport_alison','Lista de Oportunidades – Alison','ClickUp','https://sharing.clickup.com/9007105436/l/h/8cdv1cw-36453/eb523e88d6e9c38','_blank',2,'media'),
   ('comercial','com_carteira_alison','Carteira Alison','ClickUp','https://sharing.clickup.com/9007105436/l/h/8cdv1cw-30393/59ba2d5bd702322','_blank',3,'media'),
