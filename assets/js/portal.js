@@ -37,7 +37,14 @@ if(!list.some((r)=>r.codigo==='ind_controle_caixas')){
   });
 }
 
-if(!list.some((r)=>r.codigo==='ind_painel_diretoria_topcon_bi')){
+const painelDiretoria=list.find((r)=>r.codigo==='ind_painel_diretoria_topcon_bi');
+if(painelDiretoria){
+  painelDiretoria.titulo='PAINEL DIRETORIA TOPCON BI';
+  painelDiretoria.subtitulo='Zoho Analytics';
+  painelDiretoria.url='https://analytics.zoho.com/workspace/1762700000040012018/view/1762700000230550749';
+  painelDiretoria.target='_blank';
+  painelDiretoria.ordem=10;
+}else{
   list.push({
     module_id:indicadores.id,
     codigo:'ind_painel_diretoria_topcon_bi',
