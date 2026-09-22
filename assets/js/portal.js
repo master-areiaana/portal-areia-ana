@@ -37,6 +37,18 @@ if(!list.some((r)=>r.codigo==='ind_controle_caixas')){
   });
 }
 
+if(!list.some((r)=>r.codigo==='ind_painel_diretoria_topcon_bi')){
+  list.push({
+    module_id:indicadores.id,
+    codigo:'ind_painel_diretoria_topcon_bi',
+    titulo:'PAINEL DIRETORIA TOPCON BI',
+    subtitulo:'Zoho Analytics',
+    url:'https://analytics.zoho.com/workspace/1762700000040012018/view/1762700000230550749',
+    target:'_blank',
+    ordem:10
+  });
+}
+
 return list.sort((a,b)=>(a.ordem||0)-(b.ordem||0));
 }
 
