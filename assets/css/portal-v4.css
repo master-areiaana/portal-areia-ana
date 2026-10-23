@@ -1,0 +1,50 @@
+/* =====================================================================
+   Portal de Acessos — layout Areia Ana v4
+   Carregado por último. Só visual: não muda ids nem comportamento.
+   Tokens vêm de areia-ana-ui.css (.aa); tema em <html data-theme>.
+   ===================================================================== */
+
+/* ---------- Botões de tema / sair (faixa fixa no login) ---------- */
+.v4-acoes.aa{min-height:0;background:transparent}
+body:not(:has(#portal[style*="block"])) .v4-acoes{position:fixed;top:16px;right:16px;margin:0;max-width:none;z-index:10001}
+body:not(:has(#portal[style*="block"])) .v4-acoes .theme-toggle{min-height:40px;padding:0 14px;border-radius:var(--r);border:1px solid var(--fieldline);background:var(--card);color:var(--ink2);font-size:14px;font-weight:600;box-shadow:none;transform:none}
+body:not(:has(#portal[style*="block"])) .v4-acoes .theme-toggle:hover{border-color:var(--btn);color:var(--link);background:var(--card)}
+
+/* ---------- Login, Esqueci minha senha e Criar nova senha ---------- */
+.login-overlay.v4-login{padding:0;display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;background:var(--bg);overflow-y:auto}
+.v4-login-faixa{flex:0 0 clamp(320px,40%,560px);background:var(--side);color:var(--sidetxt);padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+[data-theme=dark] .v4-login-faixa{border-right:1px solid var(--line)}
+.v4-login-faixa img{display:block;width:132px;height:auto}
+.v4-login-faixa .v4-eb{color:var(--acento);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.v4-login-faixa h1{margin:10px 0 0;font-family:'Barlow Semi Condensed',sans-serif;font-size:40px;font-weight:700;line-height:1.1;color:#fff;max-width:420px;display:block}
+.v4-login-faixa p{margin:14px 0 0;font-size:16px;max-width:420px}
+.v4-login-faixa small{color:var(--sidemuted);font-size:13px}
+.v4-login .v4-login-main{flex:1 1 auto;min-width:0;max-width:none;margin:0;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;padding:72px 24px 48px}
+
+/* cartão: mesmo molde nas três telas */
+.v4-login .login-box{width:100%;max-width:400px;padding:32px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--line);box-shadow:none;text-align:left;backdrop-filter:none}
+.v4-login .login-row{display:flex;flex-direction:column;gap:16px;margin:0;justify-items:stretch}
+.v4-login .login-row.hidden{display:none}
+.v4-login .v4-cab h2{margin:0;font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:0;line-height:1.15;color:var(--ink)}
+.v4-login .login-subtitle{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.v4-login .v4-campo label{display:block;margin-bottom:6px;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.v4-login .login-input{width:100%;height:auto;min-height:44px;border:1px solid var(--fieldline);border-radius:var(--r);padding:0 12px;font-size:15px;background:var(--card);color:var(--ink)}
+.v4-login .login-input::placeholder{color:var(--muted);opacity:.7}
+.v4-login .login-btn{width:100%;height:auto;min-height:46px;border-radius:var(--r);border:1px solid var(--btn);background:var(--btn);color:#fff;font-size:15px;font-weight:700;box-shadow:none;cursor:pointer}
+.v4-login .login-btn:hover{background:var(--btnhover);border-color:var(--btnhover)}
+.v4-login .link-btn{align-self:center;padding:4px 0;color:var(--link);font-size:14px;text-decoration:underline}
+.v4-login .link-btn:hover{color:var(--linkhover)}
+.v4-login .login-error,.v4-login .admin-message:not(:empty){margin:0;padding:10px 12px;border-radius:var(--r-sm);font-size:14px;border:1px solid var(--line);background:var(--soft);color:var(--ink2)}
+.v4-login .login-error{background:var(--er-bg);border-color:var(--er-bd);color:var(--er-tx)}
+.v4-login .admin-message.error{background:var(--er-bg);border-color:var(--er-bd);color:var(--er-tx)}
+.v4-login .admin-message.success{background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok-tx)}
+
+@media (max-width:759.98px){
+  .login-overlay.v4-login{flex-direction:column}
+  .v4-login-faixa{flex:0 0 auto;padding:28px 20px 24px;gap:18px}
+  .v4-login-faixa img{width:104px}
+  .v4-login-faixa h1{font-size:28px}
+  .v4-login-faixa p{font-size:15px}
+  .v4-login .v4-login-main{padding:24px 16px 40px;align-items:flex-start}
+  .v4-login .login-box{padding:24px 20px}
+}
