@@ -22,6 +22,16 @@ if(rh){
   if(controlePonto){
     controlePonto.url='https://homolog.controle-ponto-proto.pages.dev/#painel';
     controlePonto.target='_blank';
+  }else{
+    list.push({
+      module_id:rh.id,
+      codigo:'rh_controle_ponto',
+      titulo:'Controle de Ponto',
+      subtitulo:'Sistema de Ponto',
+      url:'https://homolog.controle-ponto-proto.pages.dev/#painel',
+      target:'_blank',
+      ordem:3
+    });
   }
 }
 const indicadores=modules.find((m)=>m.codigo==='indicadores');
