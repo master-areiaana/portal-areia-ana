@@ -14,8 +14,28 @@ function showPortal(){$('loginOverlay').style.display='none';$('portal').style.d
 
 async function log(action,entityType=null,entityId=null,details=null){try{const c=window.PortalSupabase.getClient();if(c)await c.rpc('portal_log_event',{p_action:action,p_entity_type:entityType,p_entity_id:entityId,p_details:details});}catch(e){console.warn('Log não registrado:',e.message);}}
 
+function normalizePortalModules(modules,role){
+const list=[...(modules||[])];
+if(role?.is_admin && !list.some((m)=>m.codigo==='ativo'||m.codigo==='ativos')){
+  list.push({id:'portal-ativo',codigo:'ativo',nome:'Ativo'});
+}
+return list;
+}
+
 function normalizePortalResources(modules,resources){
 const list=[...(resources||[])];
+const ativo=modules.find((m)=>m.codigo==='ativo'||m.codigo==='ativos');
+if(ativo && !list.some((r)=>r.module_id===ativo.id && (r.codigo==='ativo_sistema'||r.url==='https://plataforma-ativos.onrender.com/imoveis-venda'))){
+  list.push({
+    module_id:ativo.id,
+    codigo:'ativo_sistema',
+    titulo:'Sistema de Ativo',
+    subtitulo:'Imóveis à venda',
+    url:'https://plataforma-ativos.onrender.com/imoveis-venda',
+    target:'_blank',
+    ordem:1
+  });
+}
 const rh=modules.find((m)=>m.codigo==='rh');
 if(rh){
   const controlePonto=list.find((r)=>r.module_id===rh.id && String(r.titulo||'').trim().toLowerCase()==='controle de ponto');
@@ -87,7 +107,7 @@ if(data.profile.status!=='ativo'){showLogin('Seu acesso está inativo ou bloquea
 state.context=data;
 $('userName').textContent=data.profile.nome||data.profile.username||data.profile.email;
 $('userRole').textContent=data.role?.nome||'Sem perfil';
-const modules=data.modules||[];
+const modules=normalizePortalModules(data.modules,data.role);
 const resources=normalizePortalResources(modules,data.resources||[]);
 if(!modules.length){
   renderEmptyAccess();
