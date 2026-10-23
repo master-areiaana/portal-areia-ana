@@ -16,6 +16,14 @@ async function log(action,entityType=null,entityId=null,details=null){try{const 
 
 function normalizePortalResources(modules,resources){
 const list=[...(resources||[])];
+const rh=modules.find((m)=>m.codigo==='rh');
+if(rh){
+  const controlePonto=list.find((r)=>r.module_id===rh.id && String(r.titulo||'').trim().toLowerCase()==='controle de ponto');
+  if(controlePonto){
+    controlePonto.url='https://homolog.controle-ponto-proto.pages.dev/#painel';
+    controlePonto.target='_blank';
+  }
+}
 const indicadores=modules.find((m)=>m.codigo==='indicadores');
 if(!indicadores)return list;
 
