@@ -111,12 +111,14 @@ const modules=normalizePortalModules(data.modules,data.role);
 const resources=normalizePortalResources(modules,data.resources||[]);
 if(!modules.length){
   renderEmptyAccess();
+  window.PortalV4?.desenhar([],[]);
   showPortal();
   await log('login_without_permissions');
   return;
 }
 renderMenu(modules);
 renderSections(modules,resources);
+window.PortalV4?.desenhar(modules,resources);
 showPortal();
 showSection(modules[0].codigo);
 await log('login_ok');

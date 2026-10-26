@@ -1,0 +1,207 @@
+/* =====================================================================
+   Portal de Acessos — layout Areia Ana v4
+   Carregado por último. Só visual: não muda ids nem comportamento.
+   Tokens vêm de areia-ana-ui.css (.aa); tema em <html data-theme>.
+   ===================================================================== */
+
+/* ---------- Botões de tema / sair (faixa fixa no login) ---------- */
+.v4-acoes.aa{min-height:0;background:transparent}
+body:not(.v4-dentro) .v4-acoes{position:fixed;top:16px;right:16px;margin:0;max-width:none;z-index:10001}
+body:not(.v4-dentro) .v4-acoes .theme-toggle{min-height:40px;padding:0 14px;border-radius:var(--r);border:1px solid var(--fieldline);background:var(--card);color:var(--ink2);font-size:14px;font-weight:600;box-shadow:none;transform:none}
+body:not(.v4-dentro) .v4-acoes .theme-toggle:hover{border-color:var(--btn);color:var(--link);background:var(--card)}
+
+/* ---------- Login, Esqueci minha senha e Criar nova senha ---------- */
+.login-overlay.v4-login{padding:0;display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;justify-content:flex-start;background:var(--bg);overflow-y:auto}
+.v4-login-faixa{flex:0 0 clamp(320px,40%,560px);background:var(--side);color:var(--sidetxt);padding:48px 56px;display:flex;flex-direction:column;justify-content:space-between;gap:40px}
+[data-theme=dark] .v4-login-faixa{border-right:1px solid var(--line)}
+.v4-login-faixa img{display:block;width:132px;height:auto}
+.v4-login-faixa .v4-eb{color:var(--acento);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.v4-login-faixa h1{margin:10px 0 0;font-family:'Barlow Semi Condensed',sans-serif;font-size:40px;font-weight:700;line-height:1.1;color:#fff;max-width:420px;display:block}
+.v4-login-faixa p{margin:14px 0 0;font-size:16px;max-width:420px}
+.v4-login-faixa small{color:var(--sidemuted);font-size:13px}
+.v4-login .v4-login-main{flex:1 1 auto;min-width:0;max-width:none;margin:0;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:0;padding:72px 24px 48px}
+
+/* cartão: mesmo molde nas três telas */
+.v4-login .login-box{width:100%;max-width:400px;padding:32px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--line);box-shadow:none;text-align:left;backdrop-filter:none}
+.v4-login .login-row{display:flex;flex-direction:column;gap:16px;margin:0;justify-items:stretch}
+.v4-login .login-row.hidden{display:none}
+.v4-login .v4-cab h2{margin:0;font-family:'Barlow Semi Condensed',sans-serif;font-size:28px;font-weight:700;letter-spacing:0;line-height:1.15;color:var(--ink)}
+.v4-login .login-subtitle{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.v4-login .v4-campo label{display:block;margin-bottom:6px;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.v4-login .login-input{width:100%;height:auto;min-height:44px;border:1px solid var(--fieldline);border-radius:var(--r);padding:0 12px;font-size:15px;background:var(--card);color:var(--ink)}
+.v4-login .login-input::placeholder{color:var(--muted);opacity:.7}
+.v4-login .login-btn{width:100%;height:auto;min-height:46px;border-radius:var(--r);border:1px solid var(--btn);background:var(--btn);color:#fff;font-size:15px;font-weight:700;box-shadow:none;cursor:pointer}
+.v4-login .login-btn:hover{background:var(--btnhover);border-color:var(--btnhover)}
+.v4-login .link-btn{align-self:center;padding:4px 0;color:var(--link);font-size:14px;text-decoration:underline}
+.v4-login .link-btn:hover{color:var(--linkhover)}
+.v4-login .login-error,.v4-login .admin-message:not(:empty){margin:0;padding:10px 12px;border-radius:var(--r-sm);font-size:14px;border:1px solid var(--line);background:var(--soft);color:var(--ink2)}
+.v4-login .login-error{background:var(--er-bg);border-color:var(--er-bd);color:var(--er-tx)}
+.v4-login .admin-message.error{background:var(--er-bg);border-color:var(--er-bd);color:var(--er-tx)}
+.v4-login .admin-message.success{background:var(--ok-bg);border-color:var(--ok-bd);color:var(--ok-tx)}
+
+@media (max-width:759.98px){
+  .login-overlay.v4-login{flex-direction:column}
+  .v4-login-faixa{flex:0 0 auto;padding:28px 20px 24px;gap:18px}
+  .v4-login-faixa img{width:104px}
+  .v4-login-faixa h1{font-size:28px}
+  .v4-login-faixa p{font-size:15px}
+  .v4-login .v4-login-main{padding:24px 16px 40px;align-items:flex-start}
+  .v4-login .login-box{padding:24px 20px}
+}
+
+/* =====================================================================
+   Casca do portal (depois do login)
+   ===================================================================== */
+body.v4-dentro{padding:0}
+body.v4-dentro .v4-acoes{display:none}
+#portal.v4-portal{max-width:none;margin:0;padding:0}
+.aa .v4-app{height:100vh;height:100dvh;min-height:0;flex-wrap:nowrap;overflow:hidden}
+
+/* menu lateral */
+.aa .v4-side{flex:0 0 280px;gap:18px;transition:flex-basis .2s}
+.aa .v4-menu{display:flex;flex-direction:column;gap:14px}
+.aa .v4-menu .navgrp{gap:2px}
+.aa .v4-nv{min-height:40px;font-size:14.5px;padding:0 14px;position:relative}
+.aa .v4-nv .nl{min-width:0;flex:1}
+.aa .v4-nv .tx{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aa .v4-grp-admin{border-top:1px solid var(--side2);padding-top:12px}
+.aa .v4-me{gap:10px}
+.aa .v4-quem{display:flex;flex-direction:column;gap:2px;font-size:12.5px;color:var(--sidemuted);min-width:0}
+.aa .v4-quem strong{color:#fff;font-weight:600}
+.aa .v4-quem span+span strong{color:#F09A5E}
+.aa .v4-me .logout-btn.sair{align-self:flex-start;min-height:32px;padding:0 12px;border-radius:var(--r-sm);border:1px solid #4A443A;background:transparent;color:var(--sidetxt);font-size:13px;font-weight:600;box-shadow:none;transform:none}
+.aa .v4-me .logout-btn.sair:hover{background:var(--side2);color:#fff;border-color:#6A6257}
+
+/* recolhido: só ícones (computador) */
+@media (min-width:900px){
+  .aa .v4-app.v4-mini .v4-side{flex-basis:76px;padding:20px 10px 14px}
+  .aa .v4-app.v4-mini .brand{padding:0;flex-direction:column;align-items:center}
+  .aa .v4-app.v4-mini .brand-txt small{display:none}
+  .aa .v4-app.v4-mini .brand-txt img{width:44px}
+  .aa .v4-app.v4-mini .collapse svg{transform:rotate(180deg)}
+  .aa .v4-app.v4-mini .navgrp>span,.aa .v4-app.v4-mini .v4-nv .tx,.aa .v4-app.v4-mini .v4-quem{display:none}
+  .aa .v4-app.v4-mini .v4-menu{gap:8px}
+  .aa .v4-app.v4-mini .navgrp+.navgrp{border-top:1px solid var(--side2);padding-top:8px}
+  .aa .v4-app.v4-mini .v4-nv{justify-content:center;padding:0;min-height:38px}
+  .aa .v4-app.v4-mini .v4-nv .nl{flex:none}
+  .aa .v4-app.v4-mini .v4-me{padding:12px 0 0;align-items:center}
+  .aa .v4-app.v4-mini .v4-me .logout-btn.sair{align-self:center;padding:0 8px}
+}
+
+/* barra de cima */
+.aa .v4-main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;overflow:hidden}
+.aa .v4-topo{position:static;padding:14px 28px;gap:12px 20px}
+.aa .v4-tt{flex:1 1 300px;min-width:0}
+.aa .v4-tt h1{margin:0;font-size:28px}
+.aa .v4-sub{color:var(--muted);font-size:14px}
+.aa .v4-ferr{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.aa .v4-qtd{display:inline-flex;align-items:center;gap:6px;align-self:center}
+.aa .v4-ponto{width:8px;height:8px;border-radius:999px;background:var(--acento);display:inline-block}
+.aa .v4-busca{min-height:40px;width:240px;max-width:100%;border:1px solid var(--fieldline);border-radius:var(--r);padding:0 12px;font-size:14px;background:var(--card);color:var(--ink)}
+.aa .v4-busca::placeholder{color:var(--muted);opacity:.8}
+.aa #v4TemaSlot .theme-toggle{min-height:40px;padding:0 14px;border-radius:var(--r);border:1px solid var(--fieldline);background:var(--card);color:var(--ink2);font-size:14px;font-weight:600;box-shadow:none;transform:none}
+.aa #v4TemaSlot .theme-toggle:hover{border-color:var(--btn);color:var(--link);background:var(--card)}
+
+/* barra de abas */
+.aa .v4-abas{display:flex;gap:4px;padding:10px 28px 0;overflow-x:auto;border-bottom:1px solid var(--line);background:var(--bg);flex:0 0 auto;scrollbar-width:thin}
+.aa .v4-aba{display:flex;align-items:center;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:var(--line2);min-height:42px;max-width:240px;flex:0 0 auto}
+.aa .v4-aba.on{background:var(--card);box-shadow:inset 0 3px 0 var(--acento)}
+.aa .v4-abab{display:flex;align-items:center;gap:8px;border:0;background:transparent;font-size:14px;font-weight:600;color:var(--muted);padding:0 14px;min-height:42px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aa .v4-aba.on .v4-abab{color:var(--ink)}
+
+/* conteúdo */
+.aa .v4-palco{flex:1;min-height:0;position:relative}
+.aa .v4-view{position:absolute;inset:0;display:none;overflow-y:auto;padding:22px 28px 32px}
+.aa .v4-view.on{display:block}
+.aa #v4Inicio.on{display:flex;flex-direction:column;gap:26px}
+
+/* Início: cards */
+.aa .v4-area-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.aa .v4-area-hd h2{font-size:19px}
+.aa .v4-area-hd span{color:var(--muted);font-size:13px}
+.aa .v4-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.aa .v4-card{min-width:0;background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:14px}
+.aa .v4-card:hover{border-color:var(--fieldline)}
+.aa .v4-card-h{display:flex;align-items:center;gap:12px}
+.aa .v4-badge{width:40px;height:40px;border-radius:var(--r);background:var(--opton);color:var(--link);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.aa .v4-nm{font-weight:700;font-size:16px;line-height:1.25;min-width:0;overflow-wrap:anywhere}
+.aa .v4-card-ft{display:flex;align-items:center;gap:8px;margin-top:auto}
+.aa .v4-card-ft .chip{align-self:center;max-width:55%;overflow:hidden;text-overflow:ellipsis}
+.aa .v4-sp{flex:1}
+.aa .v4-fora{color:var(--ink2);text-decoration:none}
+.aa .v4-fora:hover{color:var(--link);border-color:var(--btn)}
+.aa .v4-abrir,.aa .v4-abrir:hover{color:#fff}
+.aa .v4-vazio{color:var(--muted);padding:40px 0;text-align:center}
+.aa .v4-card .chip.c-neutro{background:var(--line2);color:var(--ink2)}
+
+/* =====================================================================
+   Controle de Acessos (admin.js) e avisos do portal.js dentro da casca.
+   As classes antigas usam estas variáveis; aqui elas apontam para o padrão v4.
+   ===================================================================== */
+.aa .v4-app{--bg-card:var(--card);--bg-card-soft:var(--soft);--text:var(--ink);--text-soft:var(--muted);--border-card:var(--line);--border-card-hover:var(--fieldline);--input-bg:var(--card);--input-placeholder:var(--muted);--title-color:var(--ink2);--accent:var(--btn);--accent-soft:var(--btn);--danger:var(--er-tx);--success:var(--ok-tx);--shadow-card:none}
+.aa #v4Admin .section-title{display:none}
+.aa #v4Admin .section{margin:0}
+.aa #v4Admin .empty-card,.aa #v4Admin .loading-card,.aa #v4Admin .admin-card,.aa .v4-grid .empty-card{border-radius:var(--r-lg);border-color:var(--line);padding:18px}
+.aa #v4Admin input,.aa #v4Admin select,.aa #v4Admin textarea{border:1px solid var(--fieldline);border-radius:var(--r);background:var(--card);color:var(--ink)}
+.aa #v4Admin .admin-tab{border-radius:var(--r);border:1px solid var(--fieldline);background:var(--card);color:var(--ink2);font-weight:600;min-height:40px}
+.aa #v4Admin .admin-tab.active{background:var(--btn);border-color:var(--btn);color:#fff}
+.aa #v4Admin .small-btn{border-radius:var(--r-sm);border:1px solid var(--fieldline);background:var(--card);color:var(--ink);box-shadow:none;padding:8px 12px;font-weight:600}
+.aa #v4Admin .small-btn:hover{transform:none;background:var(--soft);border-color:var(--fieldline)}
+.aa #v4Admin .small-btn.danger{color:var(--er-tx);border-color:var(--er-bd)}
+.aa #v4Admin .login-btn{background:var(--btn);color:#fff;border-radius:var(--r);box-shadow:none}
+.aa #v4Admin .login-btn:hover{background:var(--btnhover)}
+.aa #v4Admin .admin-table th{color:var(--ink2)}
+.aa #v4Admin .permission-module{border-radius:var(--r);border-color:var(--line);background:var(--soft)}
+
+/* celular */
+@media (max-width:899.98px){
+  .aa .v4-side{flex:none}
+  .aa .v4-topo{padding:10px 16px}
+}
+@media (max-width:759.98px){
+  .aa .v4-abas,.aa .v4-view{padding-left:16px;padding-right:16px}
+  .aa .v4-topo{flex-wrap:wrap;gap:10px 12px}
+  .aa .v4-tt{flex:1 1 0}
+  .aa .v4-tt h1{font-size:24px}
+  .aa .v4-sub{font-size:13px}
+  .aa .v4-ferr{width:100%;flex-wrap:nowrap}
+  .aa .v4-busca{flex:1 1 auto;min-width:0;width:auto}
+  .aa #v4TemaSlot .theme-toggle{padding:0 10px;white-space:nowrap}
+  .aa .v4-grid{grid-template-columns:minmax(0,1fr)}
+}
+
+/* =====================================================================
+   Abas internas: sistemas abertos dentro do portal
+   ===================================================================== */
+.aa .v4-abax{width:30px;height:30px;margin-right:6px;border:0;border-radius:6px;background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:0 0 auto}
+.aa .v4-abax:hover{background:var(--line);color:var(--ink)}
+.aa .v4-aba[data-v4-aba] .v4-abab{padding-right:6px}
+.aa .v4-dot{width:8px;height:8px;border-radius:999px;background:var(--acento);flex:0 0 auto;display:inline-block}
+@media (min-width:900px){.aa .v4-app.v4-mini .v4-nv .v4-dot{position:absolute;top:6px;right:8px}}
+.aa .v4-card .v4-chip-aberto{align-self:center;margin-left:auto}
+.aa .v4-card .v4-chip-aberto[hidden]{display:none}
+.aa .v4-abrir svg{margin-left:2px}
+
+/* view do sistema: barra + iframe ocupando o resto */
+.aa .v4-view.v4-sys{padding:0;overflow:hidden;flex-direction:column}
+.aa .v4-view.v4-sys.on{display:flex}
+.aa .v4-sys-barra{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 28px;border-bottom:1px solid var(--line2);background:var(--card)}
+.aa .v4-crumb{flex:1 1 260px;min-width:0;font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aa .v4-crumb button{border:0;background:transparent;padding:0;color:var(--link);cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-size:14px}
+.aa .v4-crumb b{color:var(--ink)}
+.aa .v4-sys-acoes{display:flex;flex-wrap:wrap;gap:6px}
+.aa .v4-sys-acoes .btn{text-decoration:none}
+.aa .v4-moldura{flex:1;min-height:0;position:relative;background:var(--soft)}
+.aa .v4-moldura iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+
+/* tela cheia: some o menu, a barra de cima e as abas */
+.aa .v4-app.v4-cheia .v4-side,.aa .v4-app.v4-cheia .v4-topo,.aa .v4-app.v4-cheia .v4-abas,.aa .v4-app.v4-cheia .menu-fundo{display:none}
+
+@media (max-width:759.98px){
+  .aa .v4-sys-barra{padding:6px 16px;flex-wrap:nowrap}
+  .aa .v4-crumb{flex:1 1 auto;font-size:13px}
+  .aa .v4-crumb button{font-size:13px}
+  .aa .v4-sys-acoes{flex-wrap:nowrap;gap:4px}
+  .aa .v4-sys-acoes .btn{width:36px;padding:0}
+  .aa .v4-sys-acoes .v4-rot{display:none}
+}
