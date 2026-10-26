@@ -93,7 +93,7 @@ function criarView(r){
   const v=document.createElement('section');
   v.className='v4-view v4-sys';v.dataset.v4Sys=r.codigo;v.setAttribute('aria-label',r.titulo);
   v.innerHTML=`<div class="v4-sys-barra">
-      <nav class="v4-crumb" aria-label="Caminho"><button type="button" data-v4-ir="inicio">Início</button> › ${esc(r._area)} › <b>${esc(r.titulo)}</b></nav>
+      <nav class="v4-crumb" aria-label="Caminho"><button type="button" data-v4-ir="inicio">Início</button> › <button type="button" data-v4-ir="area:${esc(r._areaCod)}">${esc(r._area)}</button> › <b>${esc(r.titulo)}</b></nav>
       <div class="v4-sys-acoes">
         <button class="btn btn-ghost btn-sm" type="button" data-v4-recarregar title="Recarregar">${svg(IC.recarregar,15)}<span class="v4-rot">Recarregar</span></button>
         <button class="btn btn-ghost btn-sm" type="button" data-v4-cheia title="Tela cheia">${svg(IC.cheia,15)}<span class="v4-rot">Tela cheia</span></button>
@@ -102,7 +102,7 @@ function criarView(r){
       </div>
     </div>
     <div class="v4-moldura"><iframe src="${esc(r.url)}" title="${esc(r.titulo)}" allow="fullscreen; clipboard-read; clipboard-write"></iframe></div>`;
-  v.querySelector('[data-v4-ir]').onclick=()=>ir('inicio');
+  v.querySelectorAll('.v4-crumb [data-v4-ir]').forEach((b)=>b.onclick=()=>ir(b.dataset.v4Ir));
   v.querySelector('[data-v4-fechar]').onclick=()=>fechar(r.codigo);
   v.querySelector('[data-v4-recarregar]').onclick=()=>{const f=v.querySelector('iframe');f.src=f.src;};
   v.querySelector('[data-v4-cheia]').onclick=()=>{$('v4App').classList.contains('v4-cheia')?sairTelaCheia():entrarTelaCheia();};
@@ -119,40 +119,59 @@ function botaoAbrir(r,classe,conteudo){
   return `<button class="${classe}" type="button" data-v4-abrir="${esc(r.codigo)}" title="${fora?'Este sistema não abre dentro do portal; abre em nova aba do navegador':esc(r.titulo)}">${conteudo}${fora&&classe.includes('v4-abrir')?svg(IC.ext,14):''}</button>`;
 }
 
+// Área da tela atual: a própria área ou a área do sistema aberto.
+function areaAtual(){if(st.tela.startsWith('area:'))return st.tela.slice(5);if(st.tela.startsWith('s:'))return st.res[st.tela.slice(2)]?._areaCod;return null;}
+const qtdItens=(n)=>`${n} ${n===1?'item':'itens'}`;
+const abertosDaArea=(a)=>a.itens.filter((r)=>st.abertos.includes(r.codigo)).length;
+
+// Menu: só as áreas, numeradas. Os sistemas aparecem no meio ao escolher a área.
 function desenharMenu(){
-  const nav=(tela,ic,txt)=>`<button class="navlink v4-nv${st.tela===tela?' on':''}" type="button" data-v4-ir="${tela}" title="${esc(txt)}"><span class="nl">${ic}<span class="tx">${esc(txt)}</span></span></button>`;
+  const atual=areaAtual();
+  const nav=(tela,on,ic,txt,extra='')=>`<button class="navlink v4-nv${on?' on':''}" type="button" data-v4-ir="${tela}" title="${esc(txt)}"><span class="nl">${ic}<span class="tx">${esc(txt)}</span></span>${extra}</button>`;
   $('v4Menu').innerHTML=
-    `<div class="navgrp"><span>Visão geral</span>${nav('inicio',svg(IC.geral,18),'Início')}</div>`+
-    st.areas.map((a,i)=>`<div class="navgrp"><span>${i+1} · ${esc(a.m.nome)}</span>`+
-      a.itens.map((r)=>botaoAbrir(r,`navlink v4-nv${st.tela==='s:'+r.codigo?' on':''}`,`<span class="nl">${icArea(a.m.codigo,18)}<span class="tx">${esc(r.titulo)}</span></span>${st.abertos.includes(r.codigo)?'<span class="v4-dot" aria-label="aberto"></span>':''}`)).join('')+
-    '</div>').join('')+
-    (st.admin?`<div class="navgrp v4-grp-admin">${nav('admin',icArea('admin',18),st.admin.nome)}</div>`:'');
+    `<div class="navgrp"><span>Visão geral</span>${nav('inicio',st.tela==='inicio',svg(IC.geral,18),'Início')}</div>`+
+    (st.areas.length?`<div class="navgrp"><span>Áreas</span>`+st.areas.map((a,i)=>nav('area:'+a.m.codigo,atual===a.m.codigo,icArea(a.m.codigo,18),`${i+1} · ${a.m.nome}`,
+      (abertosDaArea(a)?'<span class="v4-dot" aria-label="sistema aberto"></span>':'')+`<span class="v4-nqtd">${a.itens.length}</span>`)).join('')+'</div>':'')+
+    (st.admin?`<div class="navgrp v4-grp-admin">${nav('admin',st.tela==='admin',icArea('admin',18),st.admin.nome)}</div>`:'');
   $('v4Menu').querySelectorAll('[data-v4-ir]').forEach((b)=>b.onclick=()=>{ir(b.dataset.v4Ir);fecharMenuCelular();});
 }
 
+// Início: um bloco por área. Os cards de todas as áreas ficam na página e só a área escolhida aparece.
 function desenharInicio(){
-  $('v4Inicio').innerHTML=st.areas.map((a)=>`<section class="v4-area" data-v4-area>
-    <div class="v4-area-hd"><h2>${esc(a.m.nome)}</h2><span data-v4-qtd>${a.itens.length} ${a.itens.length===1?'item':'itens'}</span></div>
+  $('v4Inicio').innerHTML=`<div class="v4-grid v4-blocos" id="v4Blocos">${st.areas.map((a,i)=>`<button class="v4-bloco" type="button" data-v4-ir="area:${esc(a.m.codigo)}">
+      <span class="v4-badge">${icArea(a.m.codigo,22)}</span>
+      <span class="v4-bloco-tx"><b>${i+1} · ${esc(a.m.nome)}</b><span>${qtdItens(a.itens.length)}<span class="v4-bloco-abertos" data-v4-abertos="${esc(a.m.codigo)}" hidden></span></span></span>
+    </button>`).join('')}</div>`+
+  st.areas.map((a)=>`<section class="v4-area" data-v4-area="${esc(a.m.codigo)}">
+    <div class="v4-area-hd"><h2>${esc(a.m.nome)}</h2><span data-v4-qtd>${qtdItens(a.itens.length)}</span></div>
     <div class="v4-grid">${a.itens.map((r)=>`<article class="v4-card" data-v4-card data-codigo="${esc(r.codigo)}" data-area="${esc(a.m.nome)}" data-titulo="${esc(r.titulo)}" data-url="${esc(r.url)}">
       <div class="v4-card-h"><span class="v4-badge">${icArea(a.m.codigo,20)}</span><div class="v4-nm">${esc(r.titulo)}</div><span class="chip c-laranja v4-chip-aberto" hidden>Aberto</span></div>
       <div class="v4-card-ft">${r.subtitulo?`<span class="chip c-neutro">${esc(r.subtitulo)}</span>`:''}<span class="v4-sp"></span>${linkFora(r,'icone v4-fora',svg(IC.ext,16))}${botaoAbrir(r,'btn btn-primary btn-sm v4-abrir','Abrir')}</div>
     </article>`).join('')||'<div class="empty-card">Nenhum recurso liberado nesta aba.</div>'}</div>
   </section>`).join('')+'<div class="v4-vazio" id="v4Vazio" hidden></div>';
+  $('v4Blocos').querySelectorAll('[data-v4-ir]').forEach((b)=>b.onclick=()=>ir(b.dataset.v4Ir));
   filtrar();
 }
-function marcarAbertos(){$('v4Inicio').querySelectorAll('[data-v4-card]').forEach((c)=>{c.querySelector('.v4-chip-aberto').hidden=!st.abertos.includes(c.dataset.codigo);});}
+function marcarAbertos(){
+  $('v4Inicio').querySelectorAll('[data-v4-card]').forEach((c)=>{c.querySelector('.v4-chip-aberto').hidden=!st.abertos.includes(c.dataset.codigo);});
+  st.areas.forEach((a)=>{const el=$('v4Blocos')?.querySelector(`[data-v4-abertos="${CSS.escape(a.m.codigo)}"]`);if(!el)return;const n=abertosDaArea(a);el.hidden=!n;el.textContent=n===1?' · 1 aberto':` · ${n} abertos`;});
+}
 
-// Busca: só esconde cards na tela; não mexe na lista.
+// O que aparece no meio: os blocos (Início), a área escolhida ou o resultado da busca em todas as áreas.
+// A busca só esconde cards na tela; não mexe na lista.
 function filtrar(){
   const q=semAcento($('v4Busca').value.trim());
+  const area=st.tela.startsWith('area:')?st.tela.slice(5):null;
+  $('v4Blocos').hidden=Boolean(q)||st.tela!=='inicio';
   let total=0;
   $('v4Inicio').querySelectorAll('[data-v4-area]').forEach((sec)=>{
     const cards=[...sec.querySelectorAll('[data-v4-card]')];
     let n=0;
     cards.forEach((c)=>{const ok=!q||semAcento(c.dataset.titulo).includes(q);c.hidden=!ok;if(ok)n++;});
-    sec.hidden=Boolean(q)&&n===0;
-    if(q)sec.querySelector('[data-v4-qtd]').textContent=`${n} de ${cards.length}`;
-    else sec.querySelector('[data-v4-qtd]').textContent=`${cards.length} ${cards.length===1?'item':'itens'}`;
+    sec.hidden=q?n===0:sec.dataset.v4Area!==area;
+    // na área escolhida o título já está na barra de cima; o cabeçalho só aparece na busca
+    sec.querySelector('.v4-area-hd').hidden=!q;
+    sec.querySelector('[data-v4-qtd]').textContent=q?`${n} de ${cards.length}`:qtdItens(cards.length);
     total+=n;
   });
   const vazio=$('v4Vazio');
@@ -160,7 +179,7 @@ function filtrar(){
 }
 
 function desenharAbas(){
-  const inicioOn=st.tela==='inicio'||st.tela==='vazio';
+  const inicioOn=st.tela==='inicio'||st.tela==='vazio'||st.tela.startsWith('area:');
   $('v4Abas').innerHTML=`<div class="v4-aba${inicioOn?' on':''}"><button class="v4-abab" type="button" role="tab" aria-selected="${inicioOn}" data-v4-ir="inicio">${svg(IC.casa,15)}Início</button></div>`+
     st.abertos.map((cod)=>{const r=st.res[cod],on=st.tela==='s:'+cod;return `<div class="v4-aba${on?' on':''}" data-v4-aba="${esc(cod)}">
       <button class="v4-abab" type="button" role="tab" aria-selected="${on}" data-v4-ir="s:${esc(cod)}" title="${esc(r.titulo)}">${esc(r.titulo)}</button>
@@ -172,17 +191,22 @@ function desenharAbas(){
   $('v4Abas').querySelector('.v4-aba.on')?.scrollIntoView({block:'nearest',inline:'nearest'});
 }
 
-// Telas: Início (cards), Controle de Acessos (a tela atual do admin.js, aberta pelo botão de sempre) e sistemas abertos.
+// Telas: Início (blocos das áreas), uma área (cards), Controle de Acessos (a tela atual do admin.js,
+// aberta pelo botão de sempre) e sistemas abertos.
 function ir(tela){
   st.tela=tela;
   const cod=tela.startsWith('s:')?tela.slice(2):null;
-  $('v4Inicio').classList.toggle('on',tela==='inicio');
+  const area=tela.startsWith('area:')?st.areas.find((a)=>a.m.codigo===tela.slice(5)):null;
+  $('v4Inicio').classList.toggle('on',tela==='inicio'||Boolean(area));
   $('v4Admin').classList.toggle('on',tela==='admin'||tela==='vazio');
   $('v4Palco').querySelectorAll('[data-v4-sys]').forEach((v)=>v.classList.toggle('on',v.dataset.v4Sys===cod));
   if(cod){
     const r=st.res[cod];
     $('v4Titulo').textContent=r.titulo;
     $('v4Sub').textContent=[r._area,r.subtitulo].filter(Boolean).join(' · ');
+  }else if(area){
+    $('v4Titulo').textContent=area.m.nome;
+    $('v4Sub').textContent=[area.m.descricao,qtdItens(area.itens.length)].filter(Boolean).join(' · ');
   }else if(tela==='admin'){
     $('v4Titulo').textContent=st.admin?.nome||'Controle de Acessos';
     $('v4Sub').textContent=st.admin?.descricao||'';
@@ -193,6 +217,7 @@ function ir(tela){
   }
   if(!cod)sairTelaCheia();
   $('v4Qtd').textContent=st.abertos.length+(st.abertos.length===1?' aberto':' abertos');
+  if($('v4Blocos'))filtrar();
   marcarAbertos();
   desenharMenu();
   desenharAbas();
@@ -204,7 +229,7 @@ function desenhar(modules,resources){
   st.areas=(modules||[]).filter((m)=>m.codigo!=='admin').map((m)=>({m,itens:(resources||[]).filter((r)=>r.module_id===m.id)}));
   // índice por código só para a tela (o nome da área vai junto para o caminho "Início › Área › Sistema")
   st.res={};
-  st.areas.forEach((a)=>a.itens.forEach((r)=>{st.res[r.codigo]=Object.assign(Object.create(r),{_area:a.m.nome});}));
+  st.areas.forEach((a)=>a.itens.forEach((r)=>{st.res[r.codigo]=Object.assign(Object.create(r),{_area:a.m.nome,_areaCod:a.m.codigo});}));
   $('v4Busca').value='';
   desenharInicio();
   // Sem nenhuma área liberada, mostra o aviso que o portal.js já escreve.
@@ -230,7 +255,8 @@ try{escolhaMenu=localStorage.getItem(CHAVE_MENU);}catch(e){}
 const comecaRecolhido=escolhaMenu==='recolhido'||escolhaMenu==='aberto'?escolhaMenu==='recolhido':window.innerWidth<1280;
 $('v4App').classList.toggle('v4-mini',comecaRecolhido);
 $('v4Recolher').setAttribute('aria-label',comecaRecolhido?'Abrir menu':'Recolher menu');
-$('v4Busca').addEventListener('input',()=>{if(st.tela!=='inicio'&&st.tela!=='vazio')ir('inicio');filtrar();});
+// Busca em todas as áreas; de um sistema aberto ou do Controle de Acessos, volta para o meio com os cards.
+$('v4Busca').addEventListener('input',()=>{if(st.tela.startsWith('s:')||st.tela==='admin')ir('inicio');else filtrar();});
 
 window.PortalV4={desenhar};
 })();
