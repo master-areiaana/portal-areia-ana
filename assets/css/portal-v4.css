@@ -169,3 +169,39 @@ body.v4-dentro .v4-acoes{display:none}
   .aa #v4TemaSlot .theme-toggle{padding:0 10px;white-space:nowrap}
   .aa .v4-grid{grid-template-columns:minmax(0,1fr)}
 }
+
+/* =====================================================================
+   Abas internas: sistemas abertos dentro do portal
+   ===================================================================== */
+.aa .v4-abax{width:30px;height:30px;margin-right:6px;border:0;border-radius:6px;background:transparent;color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;padding:0;flex:0 0 auto}
+.aa .v4-abax:hover{background:var(--line);color:var(--ink)}
+.aa .v4-aba[data-v4-aba] .v4-abab{padding-right:6px}
+.aa .v4-dot{width:8px;height:8px;border-radius:999px;background:var(--acento);flex:0 0 auto;display:inline-block}
+@media (min-width:900px){.aa .v4-app.v4-mini .v4-nv .v4-dot{position:absolute;top:6px;right:8px}}
+.aa .v4-card .v4-chip-aberto{align-self:center;margin-left:auto}
+.aa .v4-card .v4-chip-aberto[hidden]{display:none}
+.aa .v4-abrir svg{margin-left:2px}
+
+/* view do sistema: barra + iframe ocupando o resto */
+.aa .v4-view.v4-sys{padding:0;overflow:hidden;flex-direction:column}
+.aa .v4-view.v4-sys.on{display:flex}
+.aa .v4-sys-barra{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 28px;border-bottom:1px solid var(--line2);background:var(--card)}
+.aa .v4-crumb{flex:1 1 260px;min-width:0;font-size:14px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aa .v4-crumb button{border:0;background:transparent;padding:0;color:var(--link);cursor:pointer;text-decoration:underline;text-underline-offset:2px;font-size:14px}
+.aa .v4-crumb b{color:var(--ink)}
+.aa .v4-sys-acoes{display:flex;flex-wrap:wrap;gap:6px}
+.aa .v4-sys-acoes .btn{text-decoration:none}
+.aa .v4-moldura{flex:1;min-height:0;position:relative;background:var(--soft)}
+.aa .v4-moldura iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+
+/* tela cheia: some o menu, a barra de cima e as abas */
+.aa .v4-app.v4-cheia .v4-side,.aa .v4-app.v4-cheia .v4-topo,.aa .v4-app.v4-cheia .v4-abas,.aa .v4-app.v4-cheia .menu-fundo{display:none}
+
+@media (max-width:759.98px){
+  .aa .v4-sys-barra{padding:6px 16px;flex-wrap:nowrap}
+  .aa .v4-crumb{flex:1 1 auto;font-size:13px}
+  .aa .v4-crumb button{font-size:13px}
+  .aa .v4-sys-acoes{flex-wrap:nowrap;gap:4px}
+  .aa .v4-sys-acoes .btn{width:36px;padding:0}
+  .aa .v4-sys-acoes .v4-rot{display:none}
+}
