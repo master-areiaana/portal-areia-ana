@@ -179,12 +179,12 @@ function filtrar(){
 }
 
 function desenharAbas(){
-  const inicioOn=st.tela==='inicio'||st.tela==='vazio'||st.tela.startsWith('area:');
-  $('v4Abas').innerHTML=`<div class="v4-aba${inicioOn?' on':''}"><button class="v4-abab" type="button" role="tab" aria-selected="${inicioOn}" data-v4-ir="inicio">${svg(IC.casa,15)}Início</button></div>`+
-    st.abertos.map((cod)=>{const r=st.res[cod],on=st.tela==='s:'+cod;return `<div class="v4-aba${on?' on':''}" data-v4-aba="${esc(cod)}">
+  // Só os sistemas abertos; o Início fica no menu. Sem sistema aberto, a barra some.
+  $('v4Abas').hidden=!st.abertos.length;
+  $('v4Abas').innerHTML=st.abertos.map((cod)=>{const r=st.res[cod],on=st.tela==='s:'+cod;return `<div class="v4-aba${on?' on':''}" data-v4-aba="${esc(cod)}">
       <button class="v4-abab" type="button" role="tab" aria-selected="${on}" data-v4-ir="s:${esc(cod)}" title="${esc(r.titulo)}">${esc(r.titulo)}</button>
       <button class="v4-abax" type="button" aria-label="Fechar ${esc(r.titulo)}" data-v4-x="${esc(cod)}">${svg(IC.x,14)}</button></div>`;}).join('');
-  if(st.tela!=='vazio')$('v4Abas').querySelectorAll('[data-v4-ir]').forEach((b)=>b.onclick=()=>ir(b.dataset.v4Ir));
+  $('v4Abas').querySelectorAll('[data-v4-ir]').forEach((b)=>b.onclick=()=>ir(b.dataset.v4Ir));
   $('v4Abas').querySelectorAll('[data-v4-x]').forEach((b)=>b.onclick=()=>fechar(b.dataset.v4X));
   // botão do meio do mouse na aba também fecha
   $('v4Abas').querySelectorAll('[data-v4-aba]').forEach((a)=>a.onauxclick=(e)=>{if(e.button===1)fechar(a.dataset.v4Aba);});
