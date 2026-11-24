@@ -10,6 +10,7 @@ const svg=(d,w=20)=>`<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="n
 // Só muda a tela; o cadastro dos links não é tocado.
 // Cada item é um host (vale para o site todo) ou o começo de um endereço (https://…).
 const ABRIR_FORA=[
+  'auditoria-pedidos-agregados.pages.dev', // Auditoria de Pedidos: abre diretamente no navegador
   'areiaana.bubbleapps.io',                // Bubble – Cargas: X-Frame-Options DENY
   'ctasmart.com.br',                       // CTA Smart: X-Frame-Options DENY
   'homolog.controle-ponto-proto.pages.dev',// Controle de Ponto: X-Frame-Options DENY
