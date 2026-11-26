@@ -34,11 +34,15 @@ const IC={
   ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   x:'<path d="M6 6l12 12M18 6L6 18"/>',
   recarregar:'<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>',
-  cheia:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'
+  cheia:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  pasta:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
 };
 const ICONE_AREA={indicadores:'grafico',comercial:'dinheiro',rh:'pessoa',sistemas:'ferramenta',calendario:'calendario',ativo:'casa',ativos:'casa',admin:'cadeado'};
 const icArea=(codigo,w)=>svg(IC[ICONE_AREA[codigo]||'lista'],w);
 
+// Documentos: entrada fixa para qualquer pessoa logada (não depende do cadastro de áreas nem de permissão).
+// Abre documentos.html numa aba interna, como os outros sistemas.
+const DOC={codigo:'portal_documentos',titulo:'Documentos',subtitulo:'Arquivos da empresa',url:'./documentos.html',_area:'Visão geral',_areaCod:''};
 const SUB_INICIO='Escolha uma área e clique para abrir o painel ou sistema aqui dentro.';
 // tela: 'inicio', 'admin', 'vazio' ou 's:<codigo>' (sistema aberto em aba)
 const st={areas:[],admin:null,tela:'inicio',res:{},abertos:[]};
@@ -94,7 +98,7 @@ function criarView(r){
   const v=document.createElement('section');
   v.className='v4-view v4-sys';v.dataset.v4Sys=r.codigo;v.setAttribute('aria-label',r.titulo);
   v.innerHTML=`<div class="v4-sys-barra">
-      <nav class="v4-crumb" aria-label="Caminho"><button type="button" data-v4-ir="inicio">Início</button> › <button type="button" data-v4-ir="area:${esc(r._areaCod)}">${esc(r._area)}</button> › <b>${esc(r.titulo)}</b></nav>
+      <nav class="v4-crumb" aria-label="Caminho"><button type="button" data-v4-ir="inicio">Início</button> › ${r._areaCod?`<button type="button" data-v4-ir="area:${esc(r._areaCod)}">${esc(r._area)}</button> › `:''}<b>${esc(r.titulo)}</b></nav>
       <div class="v4-sys-acoes">
         <button class="btn btn-ghost btn-sm" type="button" data-v4-recarregar title="Recarregar">${svg(IC.recarregar,15)}<span class="v4-rot">Recarregar</span></button>
         <button class="btn btn-ghost btn-sm" type="button" data-v4-cheia title="Tela cheia">${svg(IC.cheia,15)}<span class="v4-rot">Tela cheia</span></button>
@@ -130,7 +134,8 @@ function desenharMenu(){
   const atual=areaAtual();
   const nav=(tela,on,ic,txt,extra='')=>`<button class="navlink v4-nv${on?' on':''}" type="button" data-v4-ir="${tela}" title="${esc(txt)}"><span class="nl">${ic}<span class="tx">${esc(txt)}</span></span>${extra}</button>`;
   $('v4Menu').innerHTML=
-    `<div class="navgrp"><span>Visão geral</span>${nav('inicio',st.tela==='inicio',svg(IC.geral,18),'Início')}</div>`+
+    `<div class="navgrp"><span>Visão geral</span>${nav('inicio',st.tela==='inicio',svg(IC.geral,18),'Início')}`+
+    `<button class="navlink v4-nv${st.tela==='s:'+DOC.codigo?' on':''}" type="button" data-v4-abrir="${DOC.codigo}" title="${DOC.titulo}"><span class="nl">${svg(IC.pasta,18)}<span class="tx">${DOC.titulo}</span></span>${st.abertos.includes(DOC.codigo)?'<span class="v4-dot" aria-label="aberto"></span>':''}</button></div>`+
     (st.areas.length?`<div class="navgrp"><span>Áreas</span>`+st.areas.map((a,i)=>nav('area:'+a.m.codigo,atual===a.m.codigo,icArea(a.m.codigo,18),`${i+1} · ${a.m.nome}`,
       (abertosDaArea(a)?'<span class="v4-dot" aria-label="sistema aberto"></span>':'')+`<span class="v4-nqtd">${a.itens.length}</span>`)).join('')+'</div>':'')+
     (st.admin?`<div class="navgrp v4-grp-admin">${nav('admin',st.tela==='admin',icArea('admin',18),st.admin.nome)}</div>`:'');
@@ -231,6 +236,7 @@ function desenhar(modules,resources){
   // índice por código só para a tela (o nome da área vai junto para o caminho "Início › Área › Sistema")
   st.res={};
   st.areas.forEach((a)=>a.itens.forEach((r)=>{st.res[r.codigo]=Object.assign(Object.create(r),{_area:a.m.nome,_areaCod:a.m.codigo});}));
+  st.res[DOC.codigo]=DOC;
   $('v4Busca').value='';
   desenharInicio();
   // Sem nenhuma área liberada, mostra o aviso que o portal.js já escreve.

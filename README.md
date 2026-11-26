@@ -244,6 +244,26 @@ O portal controla a exibição de abas/cards e o acesso inicial. Links externos 
 
 Esconder um link no portal não bloqueia uma pessoa que já tenha o link direto e permissão no sistema externo.
 
+## Documentos (Google Drive via Apps Script)
+
+Área **Documentos**, no grupo "Visão geral" do menu. Vale para **qualquer pessoa logada**, sem permissão por área. Abre `documentos.html` numa aba interna do portal.
+
+```
+Portal (GitHub Pages)  →  Apps Script Web App  →  Pasta do Drive "05. Doc. Areia Ana" (fechada)
+  token do login            confere o login no         dona: master@areiaana.com.br
+  no corpo do POST          Supabase e lê/grava        └─ _Excluidos (nada é apagado)
+                                  ↓
+                  Planilha "Portal - Documentos - Auditoria" (aba Log)
+```
+
+- **Tela:** `documentos.html`, `assets/js/documentos.js`, `assets/css/documentos.css` e `assets/css/aa-sistema.css` (padrão v5, sem alteração).
+- **Servidor:** `apps-script/Documentos.gs`. O passo a passo para publicar está em `apps-script/PUBLICAR.md`.
+- **Login:** a cada chamada, o script pergunta ao Supabase quem é o dono do token (`portal_get_my_context`). Só aceita perfil `ativo`. O e-mail que vai para o Log é o que o Supabase devolve.
+- **Administrador:** perfil com `is_admin` no portal ou e-mail na propriedade `ADMINS` do script.
+- **Regras:** só IDs dentro da pasta raiz; `_Excluidos` não aparece; nome repetido vira ` (2)`; limite de 20 MB para subir; excluir move para `_Excluidos` e só vale para quem enviou ou para o Administrador; pasta só o Administrador exclui.
+- **CORS:** o POST vai com `Content-Type: text/plain` e sem cabeçalhos próprios, para não disparar preflight. Por isso não há barra de progresso real do envio de rede: a barra mostra a leitura do arquivo e a fila.
+- **Segredos:** não há nenhum no repositório. A URL do Web App fica em `URL_WEBAPP`, no topo de `documentos.js`, e sozinha não dá acesso a nada.
+
 ## Deploys
 
 Existem dois deploys diferentes:

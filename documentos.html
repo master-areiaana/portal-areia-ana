@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Documentos · Portal de Acessos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="data:,">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/css/aa-sistema.css">
+  <link rel="stylesheet" href="./assets/css/documentos.css?v=20261126-doc1">
+</head>
+<body>
+  <script>
+    try { if (window.self !== window.top) document.body.classList.add('doc-embutido'); } catch (e) { document.body.classList.add('doc-embutido'); }
+    // Tema antes de desenhar: segue o portal (chave portalTheme; o padrão do portal é escuro).
+    try { if (localStorage.getItem('portalTheme') !== 'light') document.body.classList.add('aa-escuro'); } catch (e) { document.body.classList.add('aa-escuro'); }
+  </script>
+  <div class="doc-app" id="docApp">
+    <header class="aa-topo">
+      <div class="aa-titulo"><small>Portal de Acessos</small><span class="aa-cond">Documentos</span></div>
+      <div class="aa-chips" id="docChips"><span class="aa-sem">Sem busca ativa</span></div>
+      <div class="aa-icones">
+        <button class="aa-ib aa-laranja" type="button" id="btnSubir" title="Subir arquivos" aria-label="Subir arquivos" disabled></button>
+        <button class="aa-ib doc-so-toque" type="button" id="btnCamera" title="Tirar foto e enviar" aria-label="Tirar foto e enviar" disabled></button>
+        <button class="aa-ib" type="button" id="btnNovaPasta" title="Nova pasta" aria-label="Nova pasta" disabled></button>
+        <button class="aa-ib" type="button" id="btnBuscar" title="Buscar" aria-label="Buscar" disabled></button>
+        <button class="aa-ib" type="button" id="btnAtualizar" title="Atualizar" aria-label="Atualizar" disabled></button>
+        <button class="aa-ib" type="button" id="btnAjuda" title="Ajuda" aria-label="Ajuda" aria-expanded="false"></button>
+        <div class="aa-pop" id="popAjuda" hidden>
+          <b>Documentos</b>
+          Arquivos da empresa, guardados no Google Drive da Areia Ana. Todo mundo que tem login no portal vê e pode enviar.<br><br>
+          <b>Enviar</b>
+          Botão laranja ou arraste os arquivos para a tela. Vão para a pasta aberta. Até <span data-limite>20</span> MB por arquivo. Nome repetido não substitui: vira "nome (2)".<br><br>
+          <b>Abrir e baixar</b>
+          PDF e imagem abrem numa aba nova. Os outros tipos são baixados.<br><br>
+          <b>Excluir</b>
+          Só quem enviou o arquivo ou o Administrador. O arquivo não é apagado: vai para uma pasta guardada, e o Administrador consegue recuperar.
+        </div>
+      </div>
+    </header>
+
+    <form class="doc-busca" id="formBusca" hidden>
+      <label class="aa-sr" for="campoBusca">Buscar arquivo pelo nome</label>
+      <input id="campoBusca" type="search" placeholder="Nome do arquivo (em todas as pastas)" autocomplete="off" minlength="2" required>
+      <button class="aa-btn aa-prim" type="submit">Buscar</button>
+      <button class="aa-btn" type="button" id="btnFecharBusca">Fechar</button>
+    </form>
+
+    <main class="aa-main">
+      <div class="doc-aviso" id="docAviso" role="alert" hidden></div>
+
+      <section class="aa-quadro doc-envios" id="docEnvios" hidden aria-live="polite">
+        <div class="aa-qbar"><span class="aa-qtit">Envio de arquivos</span><span class="doc-envio-resumo" id="envioResumo"></span><button class="aa-pic" type="button" id="btnFecharEnvios" title="Fechar" aria-label="Fechar quadro de envio" hidden></button></div>
+        <div class="aa-qbody">
+          <div class="doc-barra" aria-hidden="true"><span id="envioBarra"></span></div>
+          <ul class="doc-envio-lista" id="envioLista"></ul>
+        </div>
+      </section>
+
+      <section class="aa-quadro" id="docQuadro">
+        <div class="aa-qbar">
+          <nav class="doc-crumb" id="docCrumb" aria-label="Caminho"></nav>
+          <span class="doc-qtd" id="docQtd"></span>
+        </div>
+        <div class="aa-qbody">
+          <div class="aa-tbwrap">
+            <table class="aa-tb doc-tb">
+              <thead><tr>
+                <th>Nome</th>
+                <th class="aa-c doc-col-tam">Tamanho</th>
+                <th class="aa-c doc-col-data">Modificado</th>
+                <th class="doc-col-autor">Enviado por</th>
+                <th class="aa-c doc-col-acoes">Ações</th>
+              </tr></thead>
+              <tbody id="docLinhas"><tr><td colspan="5" class="aa-semlinha">Carregando…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="doc-soltar" id="docSoltar" hidden><div><b>Solte para enviar</b><span id="soltarDestino"></span></div></div>
+
+  <div class="aa-veu" id="docVeu"></div>
+  <form class="aa-quadro doc-modal" id="formPasta" hidden>
+    <div class="aa-qbar"><span class="aa-qtit">Nova pasta</span></div>
+    <div class="aa-qbody">
+      <label class="doc-campo">Nome da pasta<input id="campoPasta" type="text" maxlength="120" autocomplete="off" required></label>
+      <div class="doc-modal-acoes"><button class="aa-btn" type="button" id="btnCancelarPasta">Cancelar</button><button class="aa-btn aa-prim" type="submit">Criar</button></div>
+      <div class="doc-modal-erro" id="erroPasta" hidden></div>
+    </div>
+  </form>
+
+  <input type="file" id="inArquivos" multiple hidden>
+  <input type="file" id="inCamera" accept="image/*" capture="environment" hidden>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./assets/js/config.js"></script>
+  <script src="./assets/js/supabase-client.js"></script>
+  <script src="./assets/js/auth.js"></script>
+  <script src="./assets/js/documentos.js?v=20261126-doc1"></script>
+</body>
+</html>
